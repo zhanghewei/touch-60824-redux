@@ -23,6 +23,19 @@
     npm install -g babel webpack webpack-dev-server
 
 
+# 学习资料
+
+- http://www.css88.com/jqapi-1.9/category/ajax/
+- http://es6.ruanyifeng.com/#docs/module
+- http://www.ruanyifeng.com/blog/2015/03/react.html
+- http://reactjs.cn/react/docs/events.html
+- http://www.jianshu.com/p/94c988cf11f3
+- http://cn.redux.js.org/docs/basics/Reducers.html
+- http://www.w3school.com.cn/cssref/pr_border-style.asp
+- http://getbootstrap.com/getting-started/#download
+- http://www.tuicool.com/articles/zAVrqyQ
+- https://segmentfault.com/a/1190000006112093?utm_source=tuicool&utm_medium=referral
+
 
 
 

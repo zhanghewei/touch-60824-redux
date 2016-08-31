@@ -1,3 +1,7 @@
-export const QUERY_PASSENGER = 'QUERY_PASSENGER'
 export const SHOW_PASSENGER = 'SHOW_PASSENGER'
 export const ADD_PASSENGER = 'ADD_PASSENGER'
+export const LOGIN_PROCESS = 'LOGIN_PROCESS'
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAILURE = 'LOGIN_FAILURE'
+export const LOGIN_OUT = 'LOGIN_OUT'
+export const SEL = 'SEL'

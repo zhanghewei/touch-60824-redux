@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux'
-import todos from './todos'
+import sel from './sel'
+import session from './session'
+import passengers from './passengers'
 
 const rootReducer = combineReducers({
-  todos
+  session,
+  passengers,
+  sel,
 })
 
 export default rootReducer

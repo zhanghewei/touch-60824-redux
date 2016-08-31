@@ -28,6 +28,9 @@ import ContentDrafts from 'material-ui/svg-icons/content/drafts';
 
 const muiTheme = getMuiTheme();
 class App extends Component {
+  state = {
+    open: false,
+  };
 
   // handleShowPassenger(){
   //   this.props.showPassenger()
@@ -38,7 +41,7 @@ class App extends Component {
   // }
 
   render() {
-    const {todos, showPassenger, addPassenger} = this.props
+    const {passengers, showPassenger, addPassenger} = this.props
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
        <div>
@@ -79,7 +82,7 @@ class App extends Component {
            <button onClick={ showPassenger }>refresh</button>
            <button onClick={ () => addPassenger(11) }>add</button>
            <ul className="todo-list">
-             {todos.map(todo =>
+             {passengers.map(todo =>
                           <li key={todo.id}>id: {todo.id} name: {todo.name}</li>
              )}
            </ul>
@@ -93,14 +96,14 @@ class App extends Component {
 }
 
 App.propTypes = {
-  todos: PropTypes.array.isRequired,
+  passengers: PropTypes.array.isRequired,
   showPassenger: PropTypes.func.isRequired,
   addPassenger: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {
   return {
-    todos: state.todos
+    passengers: state.passengers
   }
 }
 

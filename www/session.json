@@ -1,0 +1,11 @@
+{
+  "user": {
+    "id": 1,
+    "name": "zhangsan",
+    "level": 30
+  },
+  "flight": {
+    "id": 1231,
+    "flightNo": "9c8572"
+  }
+}

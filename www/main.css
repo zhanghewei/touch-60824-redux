@@ -6,3 +6,15 @@ body {
   font-size: 13px;
   line-height: 20px;
 }
+
+.panel-red{
+  border: 1px solid red;
+}
+
+.passenger-sel-wrapper{
+  border: 2px solid grey;
+}
+
+.passenger-sel-wrapper-active{
+  border: 2px dashed lightseagreen;
+}
