@@ -10,12 +10,30 @@ const styles = {
     borderStyle: "solid",
   },
 }
+
+function keydownDoc(e){
+  e.preventDefault()
+  e.stopPropagation()
+  console.log("Doc key code ", e.keyCode)
+}
+
 // console.log(act)
+@connect(
+  state => ({
+    session: state.session,
+  }),
+  act,
+)
 class Main extends Component {
 
-  // static propTypes = {
-  //
+  // static PropTypes = {
+  //   // activePage: PropTypes.string,
+  //   // activeSel: PropTypes.string,
+  //   session: PropTypes.object,
+  //   login: PropTypes.func,
   // }
+
+
   // state = {
   //   open: false,
   // };
@@ -27,6 +45,16 @@ class Main extends Component {
   // handleAddPassenger(){
   //   this.props.addPassenger(11)
   // }
+
+
+
+  componentWillMount () {
+    document.addEventListener('keydown', keydownDoc)
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('keydown', keydownDoc)
+  }
 
   render() {
     // console.log(this.context.store);
@@ -47,6 +75,7 @@ class Main extends Component {
   }
 }
 
+
 Main.propTypes = {
   // activePage: PropTypes.string,
   // activeSel: PropTypes.string,
@@ -54,13 +83,15 @@ Main.propTypes = {
   login: PropTypes.func,
 }
 
-function mapStateToProps(state) {
-  return {
-    session: state.session,
-  }
-}
+// function mapStateToProps(state) {
+//   return {
+//     session: state.session,
+//   }
+// }
 
-export default connect(
-  mapStateToProps,
-  act
-)(Main)
+// export default connect(
+//   mapStateToProps,
+//   act
+// )(Main)
+
+export default Main

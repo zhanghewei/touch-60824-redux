@@ -9,8 +9,10 @@ export function login(userName, userPass) {
   }
 }
 
-export function sel(id) {
+export function doSel(id) {
+  // console.log(111)
   return dispatch => {
+    // console.log(222)
     dispatch({type: types.SEL, id})
   }
 }

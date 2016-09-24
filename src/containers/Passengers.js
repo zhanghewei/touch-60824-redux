@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
-import {sel} from '../actions/index'
+// import {doSel} from '../actions/index'
 import * as act from '../actions/PassengerActions'
 import SelLabel from "../components/SelLabel"
 import SelWrapper from "../components/SelWrapper"
@@ -12,14 +12,43 @@ const styles = {
     borderStyle: "solid",
   },
 };
-class Passengers extends Component {
-  getChildContext() {
-    // console.log(this.props)
-    return {
-      activePage: this.props.activePage,
-      activeSel: this.props.activeSel,
-    }
+
+@connect(
+  state => ({
+    passengers: state.passengers,
+    // activePage: state.sel.activePage,
+    // activeSel: state.sel.activeSel,
+  }),
+  {
+    ...act,
+    // sel: doSel,
+  },
+)
+export default class Passengers extends Component {
+  static PropTypes = {
+    // activeSel: PropTypes.string,
+    passengers: PropTypes.array,
+    showPassenger: PropTypes.func,
+    addPassenger: PropTypes.func,
+    // sel: PropTypes.func,
   }
+
+
+  // static childContextTypes = {
+  //   activePage: React.PropTypes.string,
+  //   activeSel: React.PropTypes.string
+  // }
+
+  // getChildContext() {
+  //   const {activePage, activeSel} = this.props;
+  //   // console.log({activePage, activeSel})
+  //
+  //   // return {
+  //   //   activePage: this.props.activePage,
+  //   //   activeSel: this.props.activeSel,
+  //   // }
+  //   return {activePage, activeSel}
+  // }
 
   render() {
     // console.log(this.props.activeSel)
@@ -45,8 +74,8 @@ class Passengers extends Component {
           <div className="col-xs-1"></div>
           <div className="col-xs-11">
             <SelWrapper>
-              <SelLabel id="selLabel_1" color="default" sel={this.props.sel}>测试</SelLabel>
-              <SelLabel id="selLabel_2" color="default" sel={this.props.sel}>测试</SelLabel>
+              <SelLabel id="selLabel_1">张三</SelLabel>
+              <SelLabel id="selLabel_2" color="default">李四</SelLabel>
             </SelWrapper>
           </div>
         </div>
@@ -55,10 +84,10 @@ class Passengers extends Component {
         <div style={styles.panel}>列表区<br/>
           <button onClick={ this.props.showPassenger }>refresh</button>
           <button onClick={ () => this.props.addPassenger(11) }>add</button>
-          <ul className="todo-list">
+          <ul>
             {this.props.passengers.map(
-              todo =>
-                <li key={todo.id}>id: {todo.id} name: {todo.name}</li>
+              pas =>
+                <li key={pas.id}>id: {pas.id} name: {pas.name}</li>
             )}
           </ul>
         </div>
@@ -69,29 +98,33 @@ class Passengers extends Component {
   }
 }
 
-Passengers.propTypes = {
-  // activeSel: PropTypes.string,
-  passengers: PropTypes.array,
-  showPassenger: PropTypes.func,
-  addPassenger: PropTypes.func,
-  sel: PropTypes.func,
-}
+// Passengers.propTypes = {
+//   // activeSel: PropTypes.string,
+//   passengers: PropTypes.array,
+//   showPassenger: PropTypes.func,
+//   addPassenger: PropTypes.func,
+//   sel: PropTypes.func,
+// }
 
-Passengers.childContextTypes = {
-  activePage: React.PropTypes.string,
-  activeSel: React.PropTypes.string
-};
+// Passengers.childContextTypes = {
+//   activePage: React.PropTypes.string,
+//   activeSel: React.PropTypes.string
+// };
 
-function mapStateToProps(state) {
-  // console.log(state)
-  return {
-    passengers: state.passengers,
-    activePage: state.sel.activePage,
-    activeSel: state.sel.activeSel,
-  }
-}
+// function mapStateToProps(state) {
+//   // console.log(state)
+//   return {
+//     passengers: state.passengers,
+//     activePage: state.sel.activePage,
+//     activeSel: state.sel.activeSel,
+//   }
+// }
+// export default connect(
+//   mapStateToProps,
+//   {...act, sel: doSel}
+// )(Passengers)
 
-export default connect(
-  mapStateToProps,
-  {...act, sel}
-)(Passengers)
+
+
+
+

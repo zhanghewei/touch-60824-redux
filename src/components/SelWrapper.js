@@ -12,6 +12,16 @@ const styles = {
     borderColor: "grey",
   },
 }
+function clickMe(e){
+  // console.log("click selWrapper")
+  // e.preventDefault()
+  e.stopPropagation()
+  this.setState(
+    {
+      active: true
+    }
+  )
+}
 export default class SelWrapper extends React.Component {
   static PropTypes = {
     children: React.PropTypes.node,
@@ -22,23 +32,24 @@ export default class SelWrapper extends React.Component {
     active: false
   }
 
+
+
   render() {
-    let r =
+
+    function keydownSelWrapper(e){
+      // e.preventDefault()
+      e.stopPropagation()
+      console.log("SelWrapper key code ", e.keyCode)
+    }
+
+    const r =
       <div
         tabIndex="1"
         style={
           this.state.active ? styles.activeWrapper : styles.defaultWrapper
         }
-        onClick={(e)=> {
-          console.log("click selWrapper")
-          e.preventDefault()
-          e.stopPropagation()
-          this.setState(
-            {
-              active: true
-            }
-          )
-        }}
+        onClick={clickMe.bind(this)}
+        onKeyDown={keydownSelWrapper}
       >
         {this.props.children}
       </div>

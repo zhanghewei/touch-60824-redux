@@ -1,7 +1,8 @@
 import * as types from '../constants/ActionTypes'
 
 const initialState = {
-  login: false,
+  // login: false,
+  login: true,
   counter: null,
   pattern: "cki",
   user: {

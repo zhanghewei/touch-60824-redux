@@ -22,6 +22,10 @@
 
     npm install -g babel webpack webpack-dev-server
 
+# decorator
+
+    npm install babel-plugin-transform-decorators-legacy --save-dev
+
 
 # 学习资料
 
@@ -35,7 +39,7 @@
 - http://getbootstrap.com/getting-started/#download
 - http://www.tuicool.com/articles/zAVrqyQ
 - https://segmentfault.com/a/1190000006112093?utm_source=tuicool&utm_medium=referral
-
+- https://segmentfault.com/a/1190000005013207
 
 
 

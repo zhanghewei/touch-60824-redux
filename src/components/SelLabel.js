@@ -1,5 +1,6 @@
-import React from "react"
-
+import React, {PropTypes} from "react"
+import {doSel} from '../actions/index'
+import {connect} from 'react-redux'
 // const styles = {
 //   activeWrapper: {
 //     borderStyle: "dashed",
@@ -13,47 +14,98 @@ import React from "react"
 //   },
 // }
 
+
+
+@connect(
+  state => ({
+    activeSel: state.sel.activeSel,
+  }),
+  {
+    doSel: doSel,
+  },
+)
 class SelLabel extends React.Component {
-  static PropTypes = {
-    id: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired,
-    sel: React.PropTypes.func.isRequired,
-    children: React.PropTypes.node,
-  }
+  // static PropTypes = {
+  //   id: PropTypes.string.isRequired,
+  //   color: PropTypes.string,
+  //   doSel: PropTypes.func,
+  //   children: PropTypes.node,
+  //   activeSel: PropTypes.string,
+  // }
+
+
+  // static defaultProps = {
+  //   color: "default",
+  // }
+
+  // static contextTypes = {
+  //   activeSel: PropTypes.string,
+  // }
 
   // state = {
   //   active: false
   // }
 
+
+
   render() {
-    let idText = this.props.id;
-    let cla = "label label-" + this.props.color;
-    console.log("active sel is " + this.context.activeSel)
-    if(this.context.activeSel === idText){
+    const {
+      id,
+      color,
+      doSel,
+      children,
+      activeSel,
+    } = this.props
+    let idText = id;
+    let cla = "label label-" + color
+    // console.log("active sel is " + this.context.activeSel)
+    // if(this.context.activeSel === idText){
+    if(activeSel === idText){
       cla += " passenger-sel-wrapper-active"
     } else {
       cla += " passenger-sel-wrapper"
     }
-    let r =
+
+    function keydownSelLabel(e){
+      // e.preventDefault()
+      e.stopPropagation()
+      console.log("SelLabel key code ", e.keyCode)
+    }
+    function clickSelLabel(e){
+      // e.preventDefault()
+      e.stopPropagation()
+      doSel(idText)
+    }
+
+    const r =
       <span
         id={ idText }
         tabIndex="1"
         className={cla}
-        onClick={(e)=> {
-          e.preventDefault()
-          e.stopPropagation()
-          this.props.sel(idText)
-        }}
+        onClick={clickSelLabel}
+        onKeyDown={keydownSelLabel}
       >
-        {this.props.children}
+        {children}
       </span>
     return r
   }
 }
 
-SelLabel.contextTypes = {
-  activeSel: React.PropTypes.string
+SelLabel.defaultProps = {
+  color: "default",
 }
+
+SelLabel.propTypes = {
+  id: PropTypes.string.isRequired,
+  color: PropTypes.string,
+  doSel: PropTypes.func,
+  children: PropTypes.node,
+  activeSel: PropTypes.string,
+}
+
+// SelLabel.contextTypes = {
+//   activeSel: PropTypes.string
+// }
 
 export default SelLabel
 
