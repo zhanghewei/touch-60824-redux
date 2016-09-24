@@ -68,7 +68,8 @@ class SelLabel extends React.Component {
 
     function keydownSelLabel(e){
       // e.preventDefault()
-      e.stopPropagation()
+      // e.stopPropagation()
+      // console.log("SelLabel event canceled " + e.cancelBubble)
       console.log("SelLabel key code ", e.keyCode)
     }
     function clickSelLabel(e){

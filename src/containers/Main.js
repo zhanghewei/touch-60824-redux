@@ -11,9 +11,16 @@ const styles = {
   },
 }
 
+function keydownWin(e){
+  e.preventDefault()
+  e.stopPropagation()
+  // console.log("tag " + e.target.tagName)
+  console.log("Win key code ", e.keyCode)
+}
 function keydownDoc(e){
   e.preventDefault()
   e.stopPropagation()
+  // console.log("tag " + e.target.tagName)
   console.log("Doc key code ", e.keyCode)
 }
 
@@ -49,11 +56,13 @@ class Main extends Component {
 
 
   componentWillMount () {
-    document.addEventListener('keydown', keydownDoc)
+    window.addEventListener('keydown', keydownWin)
+    // document.addEventListener('keydown', keydownDoc)
   }
 
   componentWillUnmount () {
-    document.removeEventListener('keydown', keydownDoc)
+    window.removeEventListener('keydown', keydownWin)
+    // document.removeEventListener('keydown', keydownDoc)
   }
 
   render() {

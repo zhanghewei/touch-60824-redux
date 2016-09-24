@@ -38,7 +38,7 @@ export default class SelWrapper extends React.Component {
 
     function keydownSelWrapper(e){
       // e.preventDefault()
-      e.stopPropagation()
+      // e.stopPropagation()
       console.log("SelWrapper key code ", e.keyCode)
     }
 
