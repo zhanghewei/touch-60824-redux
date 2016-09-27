@@ -11,15 +11,9 @@ const styles = {
   },
 }
 
-function keydownWin(e){
-  e.preventDefault()
-  e.stopPropagation()
-  // console.log("tag " + e.target.tagName)
-  console.log("Win key code ", e.keyCode)
-}
 function keydownDoc(e){
-  e.preventDefault()
-  e.stopPropagation()
+  // e.preventDefault()
+  // e.stopPropagation()
   // console.log("tag " + e.target.tagName)
   console.log("Doc key code ", e.keyCode)
 }
@@ -28,6 +22,8 @@ function keydownDoc(e){
 @connect(
   state => ({
     session: state.session,
+    activePage: state.sel.activePage,
+    activeSel: state.sel.activeSel,
   }),
   act,
 )
@@ -53,17 +49,26 @@ class Main extends Component {
   //   this.props.addPassenger(11)
   // }
 
-
-
-  componentWillMount () {
-    window.addEventListener('keydown', keydownWin)
-    // document.addEventListener('keydown', keydownDoc)
+  static childContextTypes = {
+    activePage: React.PropTypes.string,
+    activeSel: React.PropTypes.string
   }
 
-  componentWillUnmount () {
-    window.removeEventListener('keydown', keydownWin)
-    // document.removeEventListener('keydown', keydownDoc)
+
+  getChildContext() {
+    const {activePage, activeSel} = this.props;
+    return {activePage, activeSel}
   }
+
+  // componentWillMount () {
+  //   window.addEventListener('keydown', keydownWin)
+  //   // document.addEventListener('keydown', keydownDoc)
+  // }
+  //
+  // componentWillUnmount () {
+  //   window.removeEventListener('keydown', keydownWin)
+  //   // document.removeEventListener('keydown', keydownDoc)
+  // }
 
   render() {
     // console.log(this.context.store);
@@ -87,10 +92,15 @@ class Main extends Component {
 
 Main.propTypes = {
   // activePage: PropTypes.string,
-  // activeSel: PropTypes.string,
+  activeSel: PropTypes.string,
   session: PropTypes.object,
   login: PropTypes.func,
 }
+
+// Main.childContextTypes = {
+//   activePage: React.PropTypes.string,
+//   activeSel: React.PropTypes.string
+// }
 
 // function mapStateToProps(state) {
 //   return {

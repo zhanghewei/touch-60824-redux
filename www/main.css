@@ -18,3 +18,9 @@ body {
 .passenger-sel-wrapper-active{
   border: 2px dashed lightseagreen;
 }
+
+#mainContainer{
+  overflow-y: scroll;
+  padding-top: .5em;
+  padding-bottom: .5em;
+}

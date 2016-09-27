@@ -3,13 +3,20 @@ import * as types from '../constants/ActionTypes'
 const initialState = {
   activePage: "main",
   activeSel: "mainInput",
-  main:["mainInput", "selLabel_1", "selLabel_2"],
+  // main:["mainInput"],
   passengerLabels: [],
 }
 
 export default function sel(state = initialState, action) {
   switch (action.type) {
-    case types.SEL:
+    case types.SHOW_SEL:
+      const defaultActiveSel = initialState.activeSel;
+      return {
+        ...state,
+        // main: action.ids.unshift(defaultActiveSel),
+        activeSel: defaultActiveSel,
+      };
+    case types.ACTIVE_SEL:
       return {
         ...state,
         activeSel: action.id,

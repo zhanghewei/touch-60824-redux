@@ -9,11 +9,25 @@ export function login(userName, userPass) {
   }
 }
 
+export function showSel() {
+  // ids.unshift("mainInput");
+  // let act = activeSel
+  // if( act == null){
+  //   act = ids[0];
+  // }
+  // console.log(111)
+  return dispatch => {
+
+    // console.log(222)
+    dispatch({type: types.SHOW_SEL})
+  }
+}
+
 export function doSel(id) {
   // console.log(111)
   return dispatch => {
     // console.log(222)
-    dispatch({type: types.SEL, id})
+    dispatch({type: types.ACTIVE_SEL, id})
   }
 }
 

@@ -14,7 +14,17 @@ import {connect} from 'react-redux'
 //   },
 // }
 
-
+function keydownSelLabel(e){
+  // e.preventDefault()
+  // e.stopPropagation()
+  // console.log("SelLabel event canceled " + e.cancelBubble)
+  console.log("SelLabel key code ", e.keyCode)
+}
+function clickSelLabel(e){
+  // e.preventDefault()
+  e.stopPropagation()
+  doSel(idText)
+}
 
 @connect(
   state => ({
@@ -46,8 +56,6 @@ class SelLabel extends React.Component {
   //   active: false
   // }
 
-
-
   render() {
     const {
       id,
@@ -56,35 +64,20 @@ class SelLabel extends React.Component {
       children,
       activeSel,
     } = this.props
-    let idText = id;
+    // let idText = id;
     let cla = "label label-" + color
     // console.log("active sel is " + this.context.activeSel)
     // if(this.context.activeSel === idText){
-    if(activeSel === idText){
+    if(activeSel === id){
       cla += " passenger-sel-wrapper-active"
     } else {
       cla += " passenger-sel-wrapper"
     }
-
-    function keydownSelLabel(e){
-      // e.preventDefault()
-      // e.stopPropagation()
-      // console.log("SelLabel event canceled " + e.cancelBubble)
-      console.log("SelLabel key code ", e.keyCode)
-    }
-    function clickSelLabel(e){
-      // e.preventDefault()
-      e.stopPropagation()
-      doSel(idText)
-    }
-
     const r =
       <span
-        id={ idText }
+        id={ id }
         tabIndex="1"
         className={cla}
-        onClick={clickSelLabel}
-        onKeyDown={keydownSelLabel}
       >
         {children}
       </span>
