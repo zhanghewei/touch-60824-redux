@@ -2,10 +2,10 @@ import * as types from '../constants/ActionTypes'
 
 export function showPassenger(text) {
   return dispatch => {
-    $.getJSON("passenger.json", data => {
+    // $.getJSON("passenger.json", data => {
       // console.log(data.length)
       dispatch({type: types.SHOW_PASSENGER, data})
-    })
+    // })
   }
 }
 

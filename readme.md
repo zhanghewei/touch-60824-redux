@@ -40,7 +40,7 @@
 - http://www.tuicool.com/articles/zAVrqyQ
 - https://segmentfault.com/a/1190000006112093?utm_source=tuicool&utm_medium=referral
 - https://segmentfault.com/a/1190000005013207
-
+- https://github.com/planningcenter/react-patterns#scope
 
 
 

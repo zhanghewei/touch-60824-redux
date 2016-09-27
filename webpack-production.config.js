@@ -29,10 +29,6 @@ const config = {
     }),
     // Allows error warnings but does not stop compiling.
     new webpack.NoErrorsPlugin(),
-    // // Transfer Files
-    // new TransferWebpackPlugin([
-    //   {from: 'www'},
-    // ], path.resolve(__dirname, 'src')),
   ],
   module: {
     loaders: [

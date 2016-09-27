@@ -36,34 +36,47 @@ function keydownWin(e) {
   const akc = e.altKey
   const skc = e.shiftKey
   console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
-  let ids = ["mainInput"]
-  let activeIndex = 0
-  this.props.passengers.forEach((ele, i) => {
-    ids.push("pas_" + ele.id)
-  })
-  for (let idx of ids.keys()) {
-    if (ids[idx] == this.props.activeSel) {
-      activeIndex = idx
-      break
-    }
-  }
+  let ids = this.ids
+  let activeIndex = this.state.activeIndex
+  // this.props.passengers.forEach((ele, i) => {
+  //   ids.push("pas_" + ele.id)
+  // })
+  // for (let idx of ids.keys()) {
+  //   if (ids[idx] == this.props.activeSel) {
+  //     activeIndex = idx
+  //     break
+  //   }
+  // }
   // console.log(`active sel is ${this.props.activeSel}`)
   // console.log(`active index is ${activeIndex}`)
-  if (kc == 37 || kc == 38 || (kc == 9 && skc)) {
+  if ((kc == 9 && skc) || kc == 37 || kc == 38) {
+    // 上一个元素
     activeIndex--
-  } else if (kc == 9 || kc == 39 || kc == 40) {
+  } else if ((kc == 9 && !skc) || kc == 39 || kc == 40) {
+    // 下一个元素
     activeIndex++
   } else {
     return
   }
-  if(activeIndex >= ids.length){
+  if (activeIndex >= ids.length) {
     activeIndex -= ids.length
   }
-  if(activeIndex < 0){
+  if (activeIndex < 0) {
     activeIndex += ids.length
   }
+  this.setState({activeIndex})
   // console.log(`active index is ${activeIndex}`)
-  this.props.doSel(ids[activeIndex])
+  this.props.doSel(this.ids[activeIndex])
+}
+
+function focusSel(el) {
+  let id = el.id
+  if (id == this.props.activeSel) {
+    return
+  } else if (id != null) {
+
+  }
+
 }
 
 function resizeWin() {
@@ -86,6 +99,34 @@ function resizeWin() {
 )
 class Passengers extends Component {
 
+  state = {
+    ids: ["mainInput"],
+    activeIndex: 0,
+  }
+
+  refreshPassengers(){
+    $.getJSON("passenger.json", data => {
+
+    })
+    let ids = ["mainInput"]
+    let activeIndex = 0
+    this.props.passengers.forEach((ele) => {
+      ids.push("pas_" + ele.id)
+    })
+    for (let idx of ids.keys()) {
+      if (ids[idx] == this.props.activeSel) {
+        activeIndex = idx
+        break
+      }
+    }
+    console.log(`ids length is ${ids}`)
+    console.log(`passengers length is ${this.props.passengers.length}`)
+    this.ids = ids
+    this.state = {
+      activeIndex
+    }
+  }
+
   componentWillMount() {
     this.props.showPassenger()
     this.props.showSel()
@@ -94,6 +135,7 @@ class Passengers extends Component {
   }
 
   componentDidMount() {
+    this.fetchPassengers()
     resizeWin();
   }
 

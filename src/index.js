@@ -1,12 +1,10 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { Provider } from 'react-redux'
-// import App from './containers/App'
-import Main from './containers/Main'
-import configureStore from './store/configureStore'
-// import { showPassenger } from './actions'
-// import 'todomvc-app-css/index.css'
+// import { Provider } from 'react-redux'
+// import Main from './containers/Main'
+// import configureStore from './store/configureStore'
+import App2 from './App2'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap
@@ -14,13 +12,13 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 
-const store = configureStore()
-
+// const store = configureStore()
 // store.dispatch(showPassenger())
 
 render(
-  <Provider store={store}>
-    <Main />
-  </Provider>,
+  // <Provider store={store}>
+  //   <Main />
+  // </Provider>,
+  <App2/>,
   document.getElementById('root')
 )

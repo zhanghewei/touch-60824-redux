@@ -16,10 +16,6 @@ module.exports = {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    // // Moves files
-    // new TransferWebpackPlugin([
-    //   {from: 'www'},
-    // ], __dirname),
   ],
   module: {
     loaders: [
