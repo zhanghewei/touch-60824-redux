@@ -28,11 +28,14 @@ import SelWrapper from "../components/SelWrapper"
  * @param e
  */
 function keydownWin(e) {
-  // e.preventDefault()
-  // e.stopPropagation()
+  e.preventDefault()
+  e.stopPropagation()
   // console.log("tag " + e.target.tagName)
   const kc = e.keyCode
-  console.log("Win key code ", kc)
+  const ckc = e.ctrlKey
+  const akc = e.altKey
+  const skc = e.shiftKey
+  console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
   let ids = ["mainInput"]
   let activeIndex = 0
   this.props.passengers.forEach((ele, i) => {
@@ -44,13 +47,14 @@ function keydownWin(e) {
       break
     }
   }
-  console.log(`active sel is ${this.props.activeSel}`)
-  console.log(`active index is ${activeIndex}`)
-  if (kc == 9 || kc == 39 || kc == 40) {
-    activeIndex++
-  }
-  if (kc == 37 || kc == 38) {
+  // console.log(`active sel is ${this.props.activeSel}`)
+  // console.log(`active index is ${activeIndex}`)
+  if (kc == 37 || kc == 38 || (kc == 9 && skc)) {
     activeIndex--
+  } else if (kc == 9 || kc == 39 || kc == 40) {
+    activeIndex++
+  } else {
+    return
   }
   if(activeIndex >= ids.length){
     activeIndex -= ids.length
@@ -58,7 +62,7 @@ function keydownWin(e) {
   if(activeIndex < 0){
     activeIndex += ids.length
   }
-  console.log(`active index is ${activeIndex}`)
+  // console.log(`active index is ${activeIndex}`)
   this.props.doSel(ids[activeIndex])
 }
 
@@ -81,25 +85,6 @@ function resizeWin() {
   },
 )
 class Passengers extends Component {
-  // static childContextTypes = {
-  //   activePage: React.PropTypes.string,
-  //   activeSel: React.PropTypes.string
-  // }
-
-  // getChildContext() {
-  //   const {activePage, activeSel} = this.props;
-  //   // console.log({activePage, activeSel})
-  //
-  //   // return {
-  //   //   activePage: this.props.activePage,
-  //   //   activeSel: this.props.activeSel,
-  //   // }
-  //   return {activePage, activeSel}
-  // }
-
-  // static contextTypes = {
-  //   activeSel: PropTypes.string,
-  // }
 
   componentWillMount() {
     this.props.showPassenger()
@@ -120,16 +105,17 @@ class Passengers extends Component {
   render() {
     const {
       passengers,
-      sel,
+      // sel,
       showPassenger,
       addPassenger,
       activeSel,
     } = this.props
 
-    // const {
-    //   // activePage,
-    //   activeSel,
-    // } = this.context
+    const mainInputSta = "mainInput" == activeSel
+    let mainInputCls = "form-control"
+    if (mainInputSta) {
+      mainInputCls += " sel-active"
+    }
 
     const r =
       <div>
@@ -139,9 +125,7 @@ class Passengers extends Component {
               <div className="col-xs-1"></div>
               <div className="col-xs-10">
                 <div className="input-group" style={{paddingTop: ".5em"}}>
-                  <SelWrapper sta={"mainInput" == activeSel}>
-                    <input key="mainInput" className="form-control"/>
-                  </SelWrapper>
+                  <input key="mainInput" className={mainInputCls} tabIndex="-1"/>
                   <span className="input-group-btn">
                   <button className="btn btn-default" tabIndex="-1">
                     <span className="glyphicon glyphicon-play">执行(Enter)</span>
@@ -233,28 +217,6 @@ Passengers.propTypes = {
   showSel: PropTypes.func,
   doSel: PropTypes.func,
 }
-
-// Passengers.contextTypes = {
-//   activeSel: PropTypes.string,
-// }
-
-// Passengers.childContextTypes = {
-//   activePage: React.PropTypes.string,
-//   activeSel: React.PropTypes.string
-// };
-
-// function mapStateToProps(state) {
-//   // console.log(state)
-//   return {
-//     passengers: state.passengers,
-//     activePage: state.sel.activePage,
-//     activeSel: state.sel.activeSel,
-//   }
-// }
-// export default connect(
-//   mapStateToProps,
-//   {...act, sel: doSel}
-// )(Passengers)
 
 export default Passengers
 

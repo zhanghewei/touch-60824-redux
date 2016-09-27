@@ -54,7 +54,7 @@ class SelWrapper extends React.Component {
 
     // console.log(`wrapper active sel is ${activeSel}`)
 
-    let cls = sta ? "passenger-sel-wrapper-active" : "passenger-sel-wrapper"
+    let cls = sta ? "sel-active" : "sel"
 
     const r =
       <div

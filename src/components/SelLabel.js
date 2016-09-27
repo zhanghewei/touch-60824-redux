@@ -13,27 +13,27 @@ import {connect} from 'react-redux'
 //     borderColor: "grey",
 //   },
 // }
-
-function keydownSelLabel(e){
-  // e.preventDefault()
-  // e.stopPropagation()
-  // console.log("SelLabel event canceled " + e.cancelBubble)
-  console.log("SelLabel key code ", e.keyCode)
-}
-function clickSelLabel(e){
-  // e.preventDefault()
-  e.stopPropagation()
-  doSel(idText)
-}
-
-@connect(
-  state => ({
-    activeSel: state.sel.activeSel,
-  }),
-  {
-    doSel: doSel,
-  },
-)
+//
+// function keydownSelLabel(e){
+//   // e.preventDefault()
+//   // e.stopPropagation()
+//   // console.log("SelLabel event canceled " + e.cancelBubble)
+//   console.log("SelLabel key code ", e.keyCode)
+// }
+// function clickSelLabel(e){
+//   // e.preventDefault()
+//   e.stopPropagation()
+//   doSel(idText)
+// }
+//
+// @connect(
+//   state => ({
+//     activeSel: state.sel.activeSel,
+//   }),
+//   {
+//     doSel: doSel,
+//   },
+// )
 class SelLabel extends React.Component {
   // static PropTypes = {
   //   id: PropTypes.string.isRequired,
@@ -60,23 +60,23 @@ class SelLabel extends React.Component {
     const {
       id,
       color,
-      doSel,
+      // doSel,
       children,
-      activeSel,
+      // activeSel,
+      sta,
     } = this.props
     // let idText = id;
     let cla = "label label-" + color
     // console.log("active sel is " + this.context.activeSel)
     // if(this.context.activeSel === idText){
-    if(activeSel === id){
-      cla += " passenger-sel-wrapper-active"
+    if(sta){
+      cla += " sel-active"
     } else {
-      cla += " passenger-sel-wrapper"
+      cla += " sel"
     }
     const r =
       <span
         id={ id }
-        tabIndex="1"
         className={cla}
       >
         {children}
@@ -87,14 +87,16 @@ class SelLabel extends React.Component {
 
 SelLabel.defaultProps = {
   color: "default",
+  sta: false,
 }
 
 SelLabel.propTypes = {
   id: PropTypes.string.isRequired,
   color: PropTypes.string,
-  doSel: PropTypes.func,
+  // doSel: PropTypes.func,
   children: PropTypes.node,
-  activeSel: PropTypes.string,
+  // activeSel: PropTypes.string,
+  sta: PropTypes.bool,
 }
 
 // SelLabel.contextTypes = {
