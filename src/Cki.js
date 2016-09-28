@@ -20,7 +20,7 @@ class Cki extends Component {
   constructor() {
     super()
     this.state = {
-      ids: ["mainInput"],
+      ids: [{id: "mainInput", data: null}],
       activePage: "main",
       activeSel: "mainInput",
       activeF1: "",
@@ -31,13 +31,13 @@ class Cki extends Component {
 
   }
 
-  fetchPassengers(){
+  fetchPassengers() {
     // console.log(11)
     $.getJSON("passenger.json", (data => {
       let passengers = data
-      let ids = ["mainInput"]
+      let ids = [this.state.ids[0]]
       passengers.forEach((ele) => {
-        ids.push("pas_" + ele.id)
+        ids.push({id: "pas_" + ele.id, data: ele})
       })
       const a = {
         ...this.state,
@@ -52,18 +52,18 @@ class Cki extends Component {
     }).bind(this))
   }
 
-  addPassenger(){
+  addPassenger() {
     let passengers = this.state.passengers
-    passengers.push({id: passengers.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, name: "abcd"})
-    let ids = ["mainInput"]
+    passengers.push(
+      {id: passengers.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, name: "abcd"})
+    let ids = [this.state.ids[0]]
     passengers.forEach((ele) => {
-      ids.push("pas_" + ele.id)
+      ids.push({id: "pas_" + ele.id, data: ele})
     })
     const a = {
       ...this.state,
       ids,
       passengers,
-      // activeIndex,
     }
     this.setState(a)
   }
@@ -93,16 +93,56 @@ class Cki extends Component {
   handleWinKeydown = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    // console.log("tag " + e.target.tagName)
+    console.log("tag " + e.target.tagName)
     const kc = e.keyCode
-    // const ckc = e.ctrlKey
-    // const akc = e.altKey
+    const ckc = e.ctrlKey
+    const akc = e.altKey
     const skc = e.shiftKey
-    // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
-    let ids = this.state.ids
+    console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
+    if (kc == 112) {
+      // f1
+      const a = {
+        ...this.state,
+        activePage: "f1",
+      }
+      this.setState(a)
+      return
+    }
+
+    if (kc == 27) {
+      // esc
+      const a = {
+        ...this.state,
+        activePage: "main",
+      }
+      this.setState(a)
+      return
+    }
+
+    if (kc == 13) {
+      // enter
+      if (this.state.activePage == "main" && e.target.tagName != "INPUT") {
+        let f1s = this.state.f1s
+        for (let p of this.state.passengers.values()) {
+          if ("pas_" + p.id == this.state.activeSel) {
+            f1s.push({id: "f1_" + p.id, data: p})
+            break
+          }
+        }
+        const a = {
+          ...this.state,
+          f1s,
+        }
+        this.setState(a)
+      }
+      return
+    }
+
+    let ids = this.state.activePage == "main" ? this.state.ids : this.state.f1s
+    let active = this.state.activePage == "main" ? this.state.activeSel : this.state.activeF1
     let activeIndex = 0
     for (let idx of ids.keys()) {
-      if (ids[idx] == this.state.activeSel) {
+      if (ids[idx].id == active) {
         activeIndex = idx
         break
       }
@@ -124,22 +164,28 @@ class Cki extends Component {
     if (activeIndex < 0) {
       activeIndex += ids.length
     }
-    const a = {
+    const a = this.state.activePage == "main" ? {
       ...this.state,
-      // activeIndex,
-      activeSel: ids[activeIndex],
+      activeSel: ids[activeIndex].id,
+    } : {
+      ...this.state,
+      activeF1: ids[activeIndex].id,
     }
     this.setState(a)
+
+    document.getElementById(this.state.activeSel).focus()
+    // console.log(`focus ${this.state.activeSel}`)
     // console.log(`active index is ${activeIndex}`)
     // this.props.doSel(this.ids[activeIndex])
   }
 
   handleFocus(e) {
+    // console.log(`trigger focus ${this.state.activeSel}`)
     e.preventDefault()
     e.stopPropagation()
     let id = e.target.id
     // avoid dead loop
-    if(id == null || id == this.state.activeSel){
+    if (id == null || id == this.state.activeSel) {
       return
     }
     const a = {
@@ -156,7 +202,8 @@ class Cki extends Component {
 
   componentDidMount() {
     this.fetchPassengers()
-    resizeWin();
+    resizeWin()
+    document.getElementById(this.state.activeSel).focus()
   }
 
   componentWillUnmount() {
@@ -165,10 +212,14 @@ class Cki extends Component {
   }
 
   render() {
-    const mainInputSta = "mainInput" == this.state.activeSel
     let mainInputCls = "form-control"
-    if (mainInputSta) {
+    if ("mainInput" == this.state.activeSel) {
       mainInputCls += " sel-active"
+    }
+
+    let f1BackCls = "row"
+    if ("f1" == this.state.activePage) {
+      f1BackCls += " f1-active"
     }
 
     const r =
@@ -193,12 +244,26 @@ class Cki extends Component {
           </div>
         </nav>
         <div id="mainContainer" className="container-fluid">
-          <div className="row">
+          <div className={f1BackCls}>
             <div className="col-xs-1">选中区(F1)</div>
             <div className="col-xs-11">
-              <div>
-
-              </div>
+                {this.state.f1s.map(
+                  it => {
+                    const idTxt = it.id
+                    let itClass = "label"
+                    if (this.state.activeF1 == idTxt) {
+                      itClass += " label-success"
+                    } else {
+                      itClass += " label-default"
+                    }
+                    const r =
+                      <span key={idTxt}>
+                        <span id={idTxt} className={itClass}>{it.data.name}</span>
+                        <b> </b>
+                      </span>
+                    return r
+                  }
+                )}
             </div>
           </div>
           <br/>
@@ -209,7 +274,8 @@ class Cki extends Component {
                   refresh
                 </button>
                 <b> </b>
-                <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add</button>
+                <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add
+                </button>
               </p>
               <ul className="list-group">
                 {this.state.passengers.map(
@@ -222,7 +288,8 @@ class Cki extends Component {
                     }
                     const r =
                       <SelWrapper sta={sta} key={idTxt + "Wr"}>
-                        <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)} tabIndex="-1"
+                        <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
+                            tabIndex="-1"
                             className={itClass}>id: {idTxt},
                           name: {it.name}</li>
                       </SelWrapper>
