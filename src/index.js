@@ -13,7 +13,6 @@ injectTapEventPlugin();
 
 
 // const store = configureStore()
-// store.dispatch(showPassenger())
 
 render(
   // <Provider store={store}>

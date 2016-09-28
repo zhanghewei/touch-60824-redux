@@ -17,43 +17,55 @@ function resizeWin() {
 }
 
 class Cki extends Component {
-  constructor(){
+  constructor() {
     super()
     this.state = {
       ids: ["mainInput"],
+      activePage: "main",
       activeSel: "mainInput",
+      activeF1: "",
       passengers: [],
-      activeIndex: 0,
+      f1s: [],
+      // activeIndex: 0,
     }
 
   }
 
-  fetchPassengers = () => {
+  fetchPassengers(){
     // console.log(11)
     $.getJSON("passenger.json", (data => {
       let passengers = data
       let ids = ["mainInput"]
-      let activeIndex = 0
       passengers.forEach((ele) => {
         ids.push("pas_" + ele.id)
       })
-      for (let idx of ids.keys()) {
-        if (ids[idx] == this.state.activeSel) {
-          activeIndex = idx
-          break
-        }
-      }
       const a = {
         ...this.state,
         ids,
         passengers,
-        activeIndex,
+        // activeIndex,
       }
       this.setState(a)
-      console.log(`ids length is ${ids}`)
-      console.log(`passengers length is ${passengers.length}`)
+      // console.log(`ids length is ${ids}`)
+      // console.log(`passengers length is ${passengers.length}`)
 
     }).bind(this))
+  }
+
+  addPassenger(){
+    let passengers = this.state.passengers
+    passengers.push({id: passengers.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, name: "abcd"})
+    let ids = ["mainInput"]
+    passengers.forEach((ele) => {
+      ids.push("pas_" + ele.id)
+    })
+    const a = {
+      ...this.state,
+      ids,
+      passengers,
+      // activeIndex,
+    }
+    this.setState(a)
   }
 
   /**
@@ -83,21 +95,18 @@ class Cki extends Component {
     e.stopPropagation()
     // console.log("tag " + e.target.tagName)
     const kc = e.keyCode
-    const ckc = e.ctrlKey
-    const akc = e.altKey
+    // const ckc = e.ctrlKey
+    // const akc = e.altKey
     const skc = e.shiftKey
-    console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
+    // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
     let ids = this.state.ids
-    let activeIndex = this.state.activeIndex
-    // this.props.passengers.forEach((ele, i) => {
-    //   ids.push("pas_" + ele.id)
-    // })
-    // for (let idx of ids.keys()) {
-    //   if (ids[idx] == this.props.activeSel) {
-    //     activeIndex = idx
-    //     break
-    //   }
-    // }
+    let activeIndex = 0
+    for (let idx of ids.keys()) {
+      if (ids[idx] == this.state.activeSel) {
+        activeIndex = idx
+        break
+      }
+    }
     // console.log(`active sel is ${this.props.activeSel}`)
     // console.log(`active index is ${activeIndex}`)
     if ((kc == 9 && skc) || kc == 37 || kc == 38) {
@@ -117,7 +126,7 @@ class Cki extends Component {
     }
     const a = {
       ...this.state,
-      activeIndex,
+      // activeIndex,
       activeSel: ids[activeIndex],
     }
     this.setState(a)
@@ -125,10 +134,23 @@ class Cki extends Component {
     // this.props.doSel(this.ids[activeIndex])
   }
 
+  handleFocus(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    let id = e.target.id
+    // avoid dead loop
+    if(id == null || id == this.state.activeSel){
+      return
+    }
+    const a = {
+      ...this.state,
+      activeSel: id,
+    }
+    this.setState(a)
+  }
+
   componentWillMount() {
-    // this.props.showPassenger()
-    // this.props.showSel()
-    // window.addEventListener('resize', resizeWin)
+    window.addEventListener('resize', resizeWin)
     window.addEventListener('keydown', this.handleWinKeydown.bind(this))
   }
 
@@ -157,7 +179,8 @@ class Cki extends Component {
               <div className="col-xs-1"></div>
               <div className="col-xs-10">
                 <div className="input-group" style={{paddingTop: ".5em"}}>
-                  <input key="mainInput" className={mainInputCls} tabIndex="-1"/>
+                  <input id="mainInput" key="mainInput" className={mainInputCls}
+                         onFocus={this.handleFocus.bind(this)} tabIndex="-1"/>
                   <span className="input-group-btn">
                   <button className="btn btn-default" tabIndex="-1">
                     <span className="glyphicon glyphicon-play">执行(Enter)</span>
@@ -182,10 +205,11 @@ class Cki extends Component {
           <div className="row">
             <div className="col-xs-12">
               <p>
-                <button className="btn btn-default" onClick={ this.fetchPassengers.bind(this) }>refresh
+                <button className="btn btn-default" onClick={ this.fetchPassengers.bind(this) }>
+                  refresh
                 </button>
                 <b> </b>
-                <button className="btn btn-default">add</button>
+                <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add</button>
               </p>
               <ul className="list-group">
                 {this.state.passengers.map(
@@ -198,7 +222,8 @@ class Cki extends Component {
                     }
                     const r =
                       <SelWrapper sta={sta} key={idTxt + "Wr"}>
-                        <li key={idTxt} tabIndex="-1" className={itClass}>id: {idTxt}
+                        <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)} tabIndex="-1"
+                            className={itClass}>id: {idTxt},
                           name: {it.name}</li>
                       </SelWrapper>
                     return r
