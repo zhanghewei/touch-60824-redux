@@ -1,69 +1,70 @@
-import React, {Component, PropTypes} from 'react'
+import React from 'react'
 import SelWrapper from "./components/SelWrapper"
 
-// function focusSel(el) {
-//   let id = el.id
-//   if (id == this.props.activeSel) {
-//     return
-//   } else if (id != null) {
-//
-//   }
-//
-// }
+const DEFAULT_INPUT = "mainInput"
+const QUERY = 'pattern-query'
+const SELECT = 'pattern-select'
+const EDIT = 'pattern-edit'
+const PATTERNS = {
+  [QUERY]: "query",
+  [SELECT]: "select",
+  [EDIT]: "edit",
+}
+const FIRST_QUERY_ITEM = {id: DEFAULT_INPUT, data: null}
+
+// private methods
+const showPassengers = Symbol('show-passengers')
 
 function resizeWin() {
   var ch = document.documentElement.clientHeight;
   document.getElementById("mainContainer").style.height = (ch - 100) + "px";
 }
 
-class Cki extends Component {
+/**
+ * 操作模式
+ *
+ * - 查询模式
+ * - 选择模式
+ * - 表单模式
+ */
+class Cki extends React.Component {
   constructor() {
     super()
+
     this.state = {
-      ids: [{id: "mainInput", data: null}],
-      activePage: "main",
-      activeSel: "mainInput",
-      activeF1: "",
-      passengers: [],
-      f1s: [],
-      // activeIndex: 0,
+      passengerData: [],
+      pagePattern: QUERY,
+      queryList: [FIRST_QUERY_ITEM],
+      queryActive: DEFAULT_INPUT,
+      selectList: [],
+      selectActive: null,
     }
 
   }
 
   fetchPassengers() {
-    // console.log(11)
     $.getJSON("passenger.json", (data => {
-      let passengers = data
-      let ids = [this.state.ids[0]]
-      passengers.forEach((ele) => {
-        ids.push({id: "pas_" + ele.id, data: ele})
-      })
-      const a = {
-        ...this.state,
-        ids,
-        passengers,
-        // activeIndex,
-      }
-      this.setState(a)
-      // console.log(`ids length is ${ids}`)
-      // console.log(`passengers length is ${passengers.length}`)
-
+      let passengerData = data
+      this[showPassengers](passengerData)
     }).bind(this))
   }
 
   addPassenger() {
-    let passengers = this.state.passengers
-    passengers.push(
-      {id: passengers.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, name: "abcd"})
-    let ids = [this.state.ids[0]]
-    passengers.forEach((ele) => {
-      ids.push({id: "pas_" + ele.id, data: ele})
+    let passengerData = this.state.passengerData
+    passengerData.push(
+      {id: passengerData.reduce((maxId, ele) => Math.max(ele.id, maxId), -1) + 1, name: "abcd"})
+    this[showPassengers](passengerData)
+  }
+
+  [showPassengers](passengerData) {
+    let queryList = [FIRST_QUERY_ITEM]
+    passengerData.map(ele => {
+      queryList.push({id: "pas_" + ele.id, data: ele})
     })
     const a = {
       ...this.state,
-      ids,
-      passengers,
+      queryList,
+      passengerData,
     }
     this.setState(a)
   }
@@ -90,7 +91,7 @@ class Cki extends Component {
    *
    * @param e
    */
-  handleWinKeydown = (e) => {
+  handleWinKeydown(e) {
     e.preventDefault()
     e.stopPropagation()
     console.log("tag " + e.target.tagName)
@@ -99,84 +100,146 @@ class Cki extends Component {
     const akc = e.altKey
     const skc = e.shiftKey
     console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
+    let b = null
     if (kc == 112) {
       // f1
-      const a = {
-        ...this.state,
-        activePage: "f1",
-      }
-      this.setState(a)
-      return
-    }
-
-    if (kc == 27) {
+      b = this.keyF1()
+    } else if (kc == 27) {
       // esc
+      b = this.keyEsc()
+    } else if (kc == 32) {
+      // space
+      b = this.keySpace()
+    } else if (kc == 13) {
+      // enter
+      b = this.keyEnter()
+    } else if ((kc == 9 && skc) || kc == 37 || kc == 38) {
+      // tab arrow-left arrow-up
+      b = this.keyMove(-1)
+    } else if ((kc == 9 && !skc) || kc == 39 || kc == 40) {
+      // shift+tab arrow-right arrow-down
+      b = this.keyMove(1)
+    }
+    if (b != null) {
+      // console.log(b)
       const a = {
         ...this.state,
-        activePage: "main",
+        ...b,
       }
       this.setState(a)
-      return
     }
+  }
 
-    if (kc == 13) {
-      // enter
-      if (this.state.activePage == "main" && e.target.tagName != "INPUT") {
-        let f1s = this.state.f1s
-        for (let p of this.state.passengers.values()) {
-          if ("pas_" + p.id == this.state.activeSel) {
-            f1s.push({id: "f1_" + p.id, data: p})
-            break
-          }
+  keyF1() {
+    return {
+      pagePattern: "f1",
+    }
+  }
+
+  keyEsc() {
+    return {
+      pagePattern: "main",
+    }
+  }
+
+  keySpace() {
+    if (this.state.pagePattern == "main" && e.target.tagName != "INPUT") {
+      let chooseList = this.state.selectList
+      for (let p of this.state.passengerData.values()) {
+        if ("pas_" + p.id == this.state.queryActive) {
+          chooseList.push({id: "f1_" + p.id, data: p})
+          break
         }
-        const a = {
-          ...this.state,
-          f1s,
-        }
-        this.setState(a)
       }
-      return
+      return chooseList
     }
+    return null
+  }
 
-    let ids = this.state.activePage == "main" ? this.state.ids : this.state.f1s
-    let active = this.state.activePage == "main" ? this.state.activeSel : this.state.activeF1
-    let activeIndex = 0
-    for (let idx of ids.keys()) {
-      if (ids[idx].id == active) {
-        activeIndex = idx
+  keyEnter() {
+    return null
+  }
+
+  get selectList() {
+    switch (this.state.pagePattern) {
+      case QUERY:
+        return this.state.queryList
+      case SELECT:
+        return this.state.selectList
+    }
+    return []
+  }
+
+  get activeEid() {
+    switch (this.state.pagePattern) {
+      case QUERY:
+        return this.state.queryActive
+      case SELECT:
+        return this.state.selectActive
+    }
+    return null
+  }
+
+  set activeEid(active) {
+    let tma = {}
+    switch (this.state.pagePattern) {
+      case QUERY:
+        tma.queryActive = active
         break
-      }
+      case SELECT:
+        tma.selectActive = active
+        break
     }
-    // console.log(`active sel is ${this.props.activeSel}`)
-    // console.log(`active index is ${activeIndex}`)
-    if ((kc == 9 && skc) || kc == 37 || kc == 38) {
-      // 上一个元素
-      activeIndex--
-    } else if ((kc == 9 && !skc) || kc == 39 || kc == 40) {
-      // 下一个元素
-      activeIndex++
-    } else {
+    const tmb = {
+      ...this.state,
+      ...tma
+    }
+    this.setState(tmb)
+  }
+
+  keyMove(step) {
+    let selectList = this.selectList
+    if(selectList.length < 2){
       return
     }
-    if (activeIndex >= ids.length) {
-      activeIndex -= ids.length
-    }
-    if (activeIndex < 0) {
-      activeIndex += ids.length
-    }
-    const a = this.state.activePage == "main" ? {
-      ...this.state,
-      activeSel: ids[activeIndex].id,
-    } : {
-      ...this.state,
-      activeF1: ids[activeIndex].id,
-    }
-    this.setState(a)
+    let activeEid = this.activeEid
+    let activeIndex = [...selectList.entries()].find(ele => ele[1].id == activeEid)[0]
 
-    document.getElementById(this.state.activeSel).focus()
-    // console.log(`focus ${this.state.activeSel}`)
-    // console.log(`active index is ${activeIndex}`)
-    // this.props.doSel(this.ids[activeIndex])
+    // 上一个元素
+    activeIndex += step
+    if (activeIndex < 0) {
+      activeIndex += selectList.length
+    }
+    if (activeIndex >= selectList.length) {
+      activeIndex -= selectList.length
+    }
+
+    activeEid = selectList[activeIndex].id
+    document.getElementById(activeEid).focus()
+    this.activeEid = activeEid
+  }
+
+  renderPassengers() {
+    const a = this.state.passengerData.map(
+      it => {
+        const idTxt = "pas_" + it.id
+        let itClass = "list-group-item"
+        let sta = this.state.queryActive == idTxt
+        if (sta) {
+          itClass += " active"
+        }
+        const r =
+          <SelWrapper sta={sta} key={idTxt + "Wr"}>
+            <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
+                tabIndex="-1"
+                className={itClass}>id: {idTxt},
+              name: {it.name}</li>
+          </SelWrapper>
+        return r
+      }
+    )
+    // console.log(a)
+    return a
   }
 
   handleFocus(e) {
@@ -185,12 +248,12 @@ class Cki extends Component {
     e.stopPropagation()
     let id = e.target.id
     // avoid dead loop
-    if (id == null || id == this.state.activeSel) {
+    if (id == null || id == this.state.queryActive) {
       return
     }
     const a = {
       ...this.state,
-      activeSel: id,
+      queryActive: id,
     }
     this.setState(a)
   }
@@ -203,7 +266,7 @@ class Cki extends Component {
   componentDidMount() {
     this.fetchPassengers()
     resizeWin()
-    document.getElementById(this.state.activeSel).focus()
+    document.getElementById(this.state.queryActive).focus()
   }
 
   componentWillUnmount() {
@@ -213,12 +276,12 @@ class Cki extends Component {
 
   render() {
     let mainInputCls = "form-control"
-    if ("mainInput" == this.state.activeSel) {
+    if ("mainInput" == this.state.queryActive) {
       mainInputCls += " sel-active"
     }
 
     let f1BackCls = "row"
-    if ("f1" == this.state.activePage) {
+    if ("f1" == this.state.pagePattern) {
       f1BackCls += " f1-active"
     }
 
@@ -247,23 +310,23 @@ class Cki extends Component {
           <div className={f1BackCls}>
             <div className="col-xs-1">选中区(F1)</div>
             <div className="col-xs-11">
-                {this.state.f1s.map(
-                  it => {
-                    const idTxt = it.id
-                    let itClass = "label"
-                    if (this.state.activeF1 == idTxt) {
-                      itClass += " label-success"
-                    } else {
-                      itClass += " label-default"
-                    }
-                    const r =
-                      <span key={idTxt}>
+              {this.state.selectList.map(
+                it => {
+                  const idTxt = it.id
+                  let itClass = "label"
+                  if (this.state.selectActive == idTxt) {
+                    itClass += " label-success"
+                  } else {
+                    itClass += " label-default"
+                  }
+                  const r =
+                    <span key={idTxt}>
                         <span id={idTxt} className={itClass}>{it.data.name}</span>
                         <b> </b>
                       </span>
-                    return r
-                  }
-                )}
+                  return r
+                }
+              )}
             </div>
           </div>
           <br/>
@@ -278,24 +341,7 @@ class Cki extends Component {
                 </button>
               </p>
               <ul className="list-group">
-                {this.state.passengers.map(
-                  it => {
-                    const idTxt = "pas_" + it.id
-                    let itClass = "list-group-item"
-                    let sta = this.state.activeSel == idTxt
-                    if (sta) {
-                      itClass += " active"
-                    }
-                    const r =
-                      <SelWrapper sta={sta} key={idTxt + "Wr"}>
-                        <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
-                            tabIndex="-1"
-                            className={itClass}>id: {idTxt},
-                          name: {it.name}</li>
-                      </SelWrapper>
-                    return r
-                  }
-                )}
+                {this.renderPassengers()}
               </ul>
             </div>
           </div>

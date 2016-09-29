@@ -10,7 +10,7 @@ const initialState = {
 export default function sel(state = initialState, action) {
   switch (action.type) {
     case types.SHOW_SEL:
-      const defaultActiveSel = initialState.activeSel;
+      const defaultActiveSel = initialState.queryActive;
       return {
         ...state,
         // main: action.ids.unshift(defaultActiveSel),

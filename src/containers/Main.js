@@ -7,7 +7,7 @@ import Passengers from '../containers/Passengers'
   state => ({
     session: state.session,
     activePage: state.sel.activePage,
-    activeSel: state.sel.activeSel,
+    queryActive: state.sel.queryActive,
   }),
   act,
 )

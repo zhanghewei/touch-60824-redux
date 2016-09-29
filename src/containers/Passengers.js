@@ -71,7 +71,7 @@ function keydownWin(e) {
 
 function focusSel(el) {
   let id = el.id
-  if (id == this.props.activeSel) {
+  if (id == this.props.queryActive) {
     return
   } else if (id != null) {
 
@@ -89,7 +89,7 @@ function resizeWin() {
     passengers: state.passengers,
     sel: state.sel.main,
     // activePage: state.sel.activePage,
-    activeSel: state.sel.activeSel,
+    queryActive: state.sel.queryActive,
   }),
   {
     ...pasAct,
