@@ -11,8 +11,8 @@ body {
   border: 1px solid red;
 }
 
-.sel{
-  /*border: 2px solid grey;*/
+.dcs-list{
+  margin-bottom: 5px;
 }
 
 .sel-active{
@@ -20,7 +20,7 @@ body {
 }
 
 .f1-active{
-  background-color: #c9e2b3;
+  background-color: #f9f9f9;
 }
 
 #mainContainer{

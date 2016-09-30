@@ -2,7 +2,7 @@
 let a = [1, 2]
 let b = [3, 4, 5]
 let c = a.concat(b)
-console.log(c)
+console.log(c.splice(1, 1))
 
 c.forEach((ele, i) => {
   console.log(ele)

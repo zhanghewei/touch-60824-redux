@@ -1,5 +1,5 @@
 import React from 'react'
-import SelWrapper from "./components/SelWrapper"
+// import SelWrapper from "./components/SelWrapper"
 
 const DEFAULT_INPUT = "mainInput"
 const QUERY = 'pattern-query'
@@ -94,12 +94,12 @@ class Cki extends React.Component {
   handleWinKeydown(e) {
     e.preventDefault()
     e.stopPropagation()
-    console.log("tag " + e.target.tagName)
+    // console.log("tag " + e.target.tagName)
     const kc = e.keyCode
     const ckc = e.ctrlKey
     const akc = e.altKey
     const skc = e.shiftKey
-    console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
+    // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
     let b = null
     if (kc == 112) {
       // f1
@@ -109,7 +109,7 @@ class Cki extends React.Component {
       b = this.keyEsc()
     } else if (kc == 32) {
       // space
-      b = this.keySpace()
+      b = this.keySpace(e)
     } else if (kc == 13) {
       // enter
       b = this.keyEnter()
@@ -131,27 +131,54 @@ class Cki extends React.Component {
   }
 
   keyF1() {
+    if (this.state.pagePattern == SELECT || this.state.selectList.length < 1) {
+      return null
+    }
+    document.getElementById(this.state.selectList[0].id).focus()
     return {
-      pagePattern: "f1",
+      pagePattern: SELECT,
+      selectActive: this.state.selectList[0].id,
     }
   }
 
   keyEsc() {
+    if (this.state.pagePattern == QUERY) {
+      return null
+    }
+    document.getElementById(DEFAULT_INPUT).focus()
     return {
-      pagePattern: "main",
+      pagePattern: QUERY,
     }
   }
 
-  keySpace() {
-    if (this.state.pagePattern == "main" && e.target.tagName != "INPUT") {
-      let chooseList = this.state.selectList
-      for (let p of this.state.passengerData.values()) {
+  keySpace(e) {
+    if (this.state.pagePattern == QUERY && e.target.tagName != "INPUT") {
+      let selectList = this.state.selectList
+      for (let p of this.state.passengerData) {
         if ("pas_" + p.id == this.state.queryActive) {
-          chooseList.push({id: "f1_" + p.id, data: p})
+          selectList.push({id: "f1_" + p.id, data: p})
           break
         }
       }
-      return chooseList
+      return {selectList}
+    }
+
+    if (this.state.pagePattern == SELECT) {
+      let selectList = this.state.selectList
+      let selectActive = this.state.selectActive
+      let activeIndex = [...selectList.entries()].find(ele => ele[1].id == selectActive)[0]
+      selectList.splice(activeIndex, 1)
+      if (selectList.length < 1) {
+        selectActive = null
+      } else {
+        activeIndex--
+        if (activeIndex < 0) {
+          activeIndex++
+        }
+        selectActive = selectList[activeIndex].id
+        document.getElementById(selectActive).focus()
+      }
+      return {selectList, selectActive}
     }
     return null
   }
@@ -182,7 +209,10 @@ class Cki extends React.Component {
 
   set activeEid(active) {
     let tma = {}
-    switch (this.state.pagePattern) {
+    // todo
+    tma.pagePattern = active.startsWith("f1_") ? SELECT : QUERY
+
+    switch (tma.pagePattern) {
       case QUERY:
         tma.queryActive = active
         break
@@ -192,20 +222,20 @@ class Cki extends React.Component {
     }
     const tmb = {
       ...this.state,
-      ...tma
+      ...tma,
     }
     this.setState(tmb)
   }
 
   keyMove(step) {
     let selectList = this.selectList
-    if(selectList.length < 2){
+    // console.log(selectList)
+    if (selectList.length < 2) {
       return
     }
     let activeEid = this.activeEid
     let activeIndex = [...selectList.entries()].find(ele => ele[1].id == activeEid)[0]
 
-    // 上一个元素
     activeIndex += step
     if (activeIndex < 0) {
       activeIndex += selectList.length
@@ -222,19 +252,20 @@ class Cki extends React.Component {
   renderPassengers() {
     const a = this.state.passengerData.map(
       it => {
-        const idTxt = "pas_" + it.id
-        let itClass = "list-group-item"
-        let sta = this.state.queryActive == idTxt
-        if (sta) {
+        const idTxt = 'pas_' + it.id
+        let itClass = "list-group-item dcs-list"
+        if (this.state.queryActive == idTxt) {
+          itClass += " sel-active"
+        }
+        let active = this.state.selectList.find(ele => ele.data.id == it.id) != null
+        if (active) {
           itClass += " active"
         }
         const r =
-          <SelWrapper sta={sta} key={idTxt + "Wr"}>
-            <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
-                tabIndex="-1"
-                className={itClass}>id: {idTxt},
-              name: {it.name}</li>
-          </SelWrapper>
+          <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
+              tabIndex="-1"
+              className={itClass}>id: {idTxt},
+            name: {it.name}</li>
         return r
       }
     )
@@ -242,20 +273,53 @@ class Cki extends React.Component {
     return a
   }
 
+  renderPassengerSelection() {
+    if (this.state.selectList.length < 1) {
+      return null
+    }
+
+    let f1BackCls = ""
+    if (SELECT == this.state.pagePattern) {
+      f1BackCls += " f1-active"
+    }
+
+    const a =
+      <div className="row">
+        <div className="col-xs-1">选中区(F1)</div>
+        <div className={"col-xs-11" + f1BackCls}>
+          {this.state.selectList.map(
+            it => {
+              const idTxt = it.id
+              let itClass = "label"
+              if (this.state.selectActive == idTxt) {
+                itClass += " label-danger"
+              } else {
+                itClass += " label-info"
+              }
+              const r =
+                <span key={idTxt}>
+                  <span id={idTxt} className={itClass} onFocus={this.handleFocus.bind(this)}
+                        tabIndex="-1">{it.data.name}</span>
+                  <b> </b>
+                </span>
+              return r
+            }
+          )}
+        </div>
+      </div>
+    return a
+  }
+
   handleFocus(e) {
-    // console.log(`trigger focus ${this.state.activeSel}`)
     e.preventDefault()
     e.stopPropagation()
     let id = e.target.id
+    console.log(`trigger focus ${id}`)
     // avoid dead loop
-    if (id == null || id == this.state.queryActive) {
+    if (id == null || id == this.activeEid) {
       return
     }
-    const a = {
-      ...this.state,
-      queryActive: id,
-    }
-    this.setState(a)
+    this.activeEid = id
   }
 
   componentWillMount() {
@@ -266,7 +330,7 @@ class Cki extends React.Component {
   componentDidMount() {
     this.fetchPassengers()
     resizeWin()
-    document.getElementById(this.state.queryActive).focus()
+    document.getElementById(this.activeEid).focus()
   }
 
   componentWillUnmount() {
@@ -279,12 +343,6 @@ class Cki extends React.Component {
     if ("mainInput" == this.state.queryActive) {
       mainInputCls += " sel-active"
     }
-
-    let f1BackCls = "row"
-    if ("f1" == this.state.pagePattern) {
-      f1BackCls += " f1-active"
-    }
-
     const r =
       <div>
         <nav className="navbar navbar-default" style={{marginBottom: 0}}>
@@ -307,28 +365,7 @@ class Cki extends React.Component {
           </div>
         </nav>
         <div id="mainContainer" className="container-fluid">
-          <div className={f1BackCls}>
-            <div className="col-xs-1">选中区(F1)</div>
-            <div className="col-xs-11">
-              {this.state.selectList.map(
-                it => {
-                  const idTxt = it.id
-                  let itClass = "label"
-                  if (this.state.selectActive == idTxt) {
-                    itClass += " label-success"
-                  } else {
-                    itClass += " label-default"
-                  }
-                  const r =
-                    <span key={idTxt}>
-                        <span id={idTxt} className={itClass}>{it.data.name}</span>
-                        <b> </b>
-                      </span>
-                  return r
-                }
-              )}
-            </div>
-          </div>
+          {this.renderPassengerSelection()}
           <br/>
           <div className="row">
             <div className="col-xs-12">
