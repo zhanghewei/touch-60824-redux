@@ -4,12 +4,12 @@ import React from 'react'
 const DEFAULT_INPUT = "mainInput"
 const QUERY = 'pattern-query'
 const SELECT = 'pattern-select'
-const EDIT = 'pattern-edit'
-const PATTERNS = {
-  [QUERY]: "query",
-  [SELECT]: "select",
-  [EDIT]: "edit",
-}
+// const EDIT = 'pattern-edit'
+// const PATTERNS = {
+//   [QUERY]: "query",
+//   [SELECT]: "select",
+//   [EDIT]: "edit",
+// }
 const FIRST_QUERY_ITEM = {id: DEFAULT_INPUT, data: null}
 
 // private methods
@@ -44,8 +44,7 @@ class Cki extends React.Component {
 
   fetchPassengers() {
     $.getJSON("passenger.json", (data => {
-      let passengerData = data
-      this[showPassengers](passengerData)
+      this[showPassengers](data)
     }).bind(this))
   }
 
@@ -96,8 +95,8 @@ class Cki extends React.Component {
     e.stopPropagation()
     // console.log("tag " + e.target.tagName)
     const kc = e.keyCode
-    const ckc = e.ctrlKey
-    const akc = e.altKey
+    // const ckc = e.ctrlKey
+    // const akc = e.altKey
     const skc = e.shiftKey
     // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
     let b = null
@@ -154,6 +153,13 @@ class Cki extends React.Component {
   keySpace(e) {
     if (this.state.pagePattern == QUERY && e.target.tagName != "INPUT") {
       let selectList = this.state.selectList
+      for(let [i, a] of selectList.entries()){
+        if("pas_" + a.data.id == this.state.queryActive){
+          // 取消选中
+          selectList.splice(i, 1)
+          return {selectList}
+        }
+      }
       for (let p of this.state.passengerData) {
         if ("pas_" + p.id == this.state.queryActive) {
           selectList.push({id: "f1_" + p.id, data: p})
@@ -250,7 +256,7 @@ class Cki extends React.Component {
   }
 
   renderPassengers() {
-    const a = this.state.passengerData.map(
+    return this.state.passengerData.map(
       it => {
         const idTxt = 'pas_' + it.id
         let itClass = "list-group-item dcs-list"
@@ -261,16 +267,14 @@ class Cki extends React.Component {
         if (active) {
           itClass += " active"
         }
-        const r =
+        return (
           <li id={idTxt} key={idTxt} onFocus={this.handleFocus.bind(this)}
               tabIndex="-1"
               className={itClass}>id: {idTxt},
             name: {it.name}</li>
-        return r
+        )
       }
     )
-    // console.log(a)
-    return a
   }
 
   renderPassengerSelection() {
@@ -283,7 +287,7 @@ class Cki extends React.Component {
       f1BackCls += " f1-active"
     }
 
-    const a =
+    return (
       <div className="row">
         <div className="col-xs-1">选中区(F1)</div>
         <div className={"col-xs-11" + f1BackCls}>
@@ -296,18 +300,18 @@ class Cki extends React.Component {
               } else {
                 itClass += " label-info"
               }
-              const r =
+              return (
                 <span key={idTxt}>
                   <span id={idTxt} className={itClass} onFocus={this.handleFocus.bind(this)}
                         tabIndex="-1">{it.data.name}</span>
                   <b> </b>
                 </span>
-              return r
+              )
             }
           )}
         </div>
       </div>
-    return a
+    )
   }
 
   handleFocus(e) {
@@ -343,7 +347,7 @@ class Cki extends React.Component {
     if ("mainInput" == this.state.queryActive) {
       mainInputCls += " sel-active"
     }
-    const r =
+    return (
       <div>
         <nav className="navbar navbar-default" style={{marginBottom: 0}}>
           <div className="container-fluid">
@@ -410,7 +414,7 @@ class Cki extends React.Component {
           </div>
         </nav>
       </div>
-    return r
+    )
   }
 }
 
