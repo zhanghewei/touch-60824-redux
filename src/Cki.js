@@ -4,16 +4,17 @@ import React from 'react'
 const DEFAULT_INPUT = "mainInput"
 const QUERY = 'pattern-query'
 const SELECT = 'pattern-select'
-// const EDIT = 'pattern-edit'
-// const PATTERNS = {
-//   [QUERY]: "query",
-//   [SELECT]: "select",
-//   [EDIT]: "edit",
-// }
-const FIRST_QUERY_ITEM = {id: DEFAULT_INPUT, data: null}
+const BLANK = ''
+const EDIT = 'pattern-edit'
+const PREFIX = {
+  [QUERY]: "qry_",
+  [SELECT]: "sel_",
+}
+// const FIRST_QUERY_ITEM = {id: DEFAULT_INPUT, data: null}
 
 // private methods
 const showPassengers = Symbol('show-passengers')
+const getDataByEid = Symbol('getDataById')
 
 function resizeWin() {
   var ch = document.documentElement.clientHeight;
@@ -34,10 +35,14 @@ class Cki extends React.Component {
     this.state = {
       passengerData: [],
       pagePattern: QUERY,
-      queryList: [FIRST_QUERY_ITEM],
+      selectPattern: BLANK,
+      queryList: [DEFAULT_INPUT],
       queryActive: DEFAULT_INPUT,
       selectList: [],
-      selectActive: null,
+      selectActive: BLANK,
+      editList: ['edt_in1', 'edt_in2', 'edt_in3', 'edt_chk1', 'edt_chk2', 'edt_chk3', 'edt_sel1',
+                 'edt_in3', 'edt_btn1'],
+      editActive: BLANK,
     }
 
   }
@@ -56,9 +61,9 @@ class Cki extends React.Component {
   }
 
   [showPassengers](passengerData) {
-    let queryList = [FIRST_QUERY_ITEM]
+    let queryList = [DEFAULT_INPUT]
     passengerData.map(ele => {
-      queryList.push({id: "pas_" + ele.id, data: ele})
+      queryList.push(PREFIX[QUERY] + ele.id)
     })
     const a = {
       ...this.state,
@@ -66,6 +71,28 @@ class Cki extends React.Component {
       passengerData,
     }
     this.setState(a)
+  }
+
+  [getDataByEid](eid) {
+    let rid = null
+    if (eid == null) {
+      return null
+    }
+    if (eid.startsWith(PREFIX[QUERY])) {
+      rid = eid.substring(PREFIX[QUERY].length, eid.length)
+    }
+    if (eid.startsWith(PREFIX[SELECT])) {
+      rid = eid.substring(PREFIX[SELECT].length, eid.length)
+    }
+    if (rid == null) {
+      return null
+    }
+    for (let [i, o] of this.state.passengerData.entries()) {
+      if (o.id == rid) {
+        return [i, o]
+      }
+    }
+    return null
   }
 
   /**
@@ -130,49 +157,56 @@ class Cki extends React.Component {
   }
 
   keyF1() {
-    if (this.state.pagePattern == SELECT || this.state.selectList.length < 1) {
+    if (this.state.selectPattern != BLANK || this.state.selectList.length < 1) {
       return null
     }
-    document.getElementById(this.state.selectList[0].id).focus()
+    document.getElementById(this.state.selectList[0]).focus()
     return {
-      pagePattern: SELECT,
-      selectActive: this.state.selectList[0].id,
+      selectPattern: SELECT,
+      selectActive: this.state.selectList[0],
     }
   }
 
   keyEsc() {
-    if (this.state.pagePattern == QUERY) {
-      return null
+    if (this.state.selectPattern != BLANK) {
+      document.getElementById(DEFAULT_INPUT).focus()
+      return {
+        selectPattern: BLANK,
+      }
     }
-    document.getElementById(DEFAULT_INPUT).focus()
-    return {
-      pagePattern: QUERY,
+    if(this.state.pagePattern == EDIT){
+      document.getElementById(DEFAULT_INPUT).focus()
+      return {
+        pagePattern: QUERY,
+      }
     }
   }
 
   keySpace(e) {
-    if (this.state.pagePattern == QUERY && e.target.tagName != "INPUT") {
+    if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY && e.target.tagName
+                                                                                != "INPUT") {
       let selectList = this.state.selectList
-      for(let [i, a] of selectList.entries()){
-        if("pas_" + a.data.id == this.state.queryActive){
+      for (let [i, a] of selectList.entries()) {
+        let dt = this[getDataByEid](a)
+        if (dt != null && PREFIX[QUERY] + dt[1].id == this.state.queryActive) {
           // 取消选中
           selectList.splice(i, 1)
           return {selectList}
         }
       }
       for (let p of this.state.passengerData) {
-        if ("pas_" + p.id == this.state.queryActive) {
-          selectList.push({id: "f1_" + p.id, data: p})
+        if (PREFIX[QUERY] + p.id == this.state.queryActive) {
+          selectList.push(PREFIX[SELECT] + p.id)
           break
         }
       }
       return {selectList}
     }
 
-    if (this.state.pagePattern == SELECT) {
+    if (this.state.selectPattern != BLANK) {
       let selectList = this.state.selectList
       let selectActive = this.state.selectActive
-      let activeIndex = [...selectList.entries()].find(ele => ele[1].id == selectActive)[0]
+      let activeIndex = [...selectList.entries()].find(ele => ele[1] == selectActive)[0]
       selectList.splice(activeIndex, 1)
       if (selectList.length < 1) {
         selectActive = null
@@ -181,7 +215,7 @@ class Cki extends React.Component {
         if (activeIndex < 0) {
           activeIndex++
         }
-        selectActive = selectList[activeIndex].id
+        selectActive = selectList[activeIndex]
         document.getElementById(selectActive).focus()
       }
       return {selectList, selectActive}
@@ -190,42 +224,75 @@ class Cki extends React.Component {
   }
 
   keyEnter() {
-    return null
+    // todo mainInput查询
+    // 值机
+    if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY) {
+      return {
+        pagePattern: EDIT,
+      }
+    }
   }
 
-  get selectList() {
-    switch (this.state.pagePattern) {
-      case QUERY:
-        return this.state.queryList
-      case SELECT:
-        return this.state.selectList
+  get activeList() {
+    if (this.state.selectPattern == BLANK) {
+      switch (this.state.pagePattern) {
+        case QUERY:
+          return this.state.queryList
+        case EDIT:
+          return this.state.editList
+      }
+    } else {
+      switch (this.state.selectPattern) {
+        case SELECT:
+          return this.state.selectList
+      }
     }
     return []
   }
 
   get activeEid() {
-    switch (this.state.pagePattern) {
-      case QUERY:
-        return this.state.queryActive
-      case SELECT:
-        return this.state.selectActive
+    if (this.state.selectPattern == BLANK) {
+      switch (this.state.pagePattern) {
+        case QUERY:
+          return this.state.queryActive
+        case EDIT:
+          return this.state.editActive
+      }
+    } else {
+      switch (this.state.selectPattern) {
+        case SELECT:
+          return this.state.selectActive
+      }
     }
     return null
   }
 
   set activeEid(active) {
     let tma = {}
-    // todo
-    tma.pagePattern = active.startsWith("f1_") ? SELECT : QUERY
 
-    switch (tma.pagePattern) {
-      case QUERY:
-        tma.queryActive = active
-        break
-      case SELECT:
-        tma.selectActive = active
-        break
+    if (active.startsWith(PREFIX[SELECT])) {
+      tma.selectPattern = SELECT
+    } else {
+      tma.selectPattern = BLANK
     }
+
+    if (this.state.selectPattern == BLANK) {
+      switch (this.state.pagePattern) {
+        case QUERY:
+          tma.queryActive = active
+          break
+        case EDIT:
+          tma.editActive = active
+          break
+      }
+    } else {
+      switch (this.state.selectPattern) {
+        case SELECT:
+          tma.selectActive = active
+          break
+      }
+    }
+
     const tmb = {
       ...this.state,
       ...tma,
@@ -234,13 +301,13 @@ class Cki extends React.Component {
   }
 
   keyMove(step) {
-    let selectList = this.selectList
+    let selectList = this.activeList
     // console.log(selectList)
     if (selectList.length < 2) {
       return
     }
     let activeEid = this.activeEid
-    let activeIndex = [...selectList.entries()].find(ele => ele[1].id == activeEid)[0]
+    let activeIndex = [...selectList.entries()].find(ele => ele[1] == activeEid)[0]
 
     activeIndex += step
     if (activeIndex < 0) {
@@ -250,20 +317,24 @@ class Cki extends React.Component {
       activeIndex -= selectList.length
     }
 
-    activeEid = selectList[activeIndex].id
+    activeEid = selectList[activeIndex]
     document.getElementById(activeEid).focus()
     this.activeEid = activeEid
   }
 
-  renderPassengers() {
-    return this.state.passengerData.map(
+  renderQuery() {
+    if (this.state.pagePattern != QUERY) {
+      return null
+    }
+
+    const a = this.state.passengerData.map(
       it => {
-        const idTxt = 'pas_' + it.id
+        const idTxt = PREFIX[QUERY] + it.id
         let itClass = "list-group-item dcs-list"
         if (this.state.queryActive == idTxt) {
           itClass += " sel-active"
         }
-        let active = this.state.selectList.find(ele => ele.data.id == it.id) != null
+        let active = this.state.selectList.find(ele => ele == PREFIX[SELECT] + it.id) != null
         if (active) {
           itClass += " active"
         }
@@ -275,10 +346,28 @@ class Cki extends React.Component {
         )
       }
     )
+    return (
+      <div>
+        <br/>
+        <div className="row">
+          <div className="col-xs-12">
+            <p>
+              <button className="btn btn-default" onClick={ this.fetchPassengers.bind(this) }>
+                refresh
+              </button>
+              <b> </b>
+              <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add
+              </button>
+            </p>
+            <ul className="list-group">{a}</ul>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  renderPassengerSelection() {
-    if (this.state.selectList.length < 1) {
+  renderSelection() {
+    if (  this.state.selectList.length < 1) {
       return null
     }
 
@@ -293,22 +382,88 @@ class Cki extends React.Component {
         <div className={"col-xs-11" + f1BackCls}>
           {this.state.selectList.map(
             it => {
-              const idTxt = it.id
+              const idTxt = it
               let itClass = "label"
               if (this.state.selectActive == idTxt) {
                 itClass += " label-danger"
               } else {
                 itClass += " label-info"
               }
+              const dt = this[getDataByEid](it)
               return (
                 <span key={idTxt}>
                   <span id={idTxt} className={itClass} onFocus={this.handleFocus.bind(this)}
-                        tabIndex="-1">{it.data.name}</span>
+                        tabIndex="-1">{dt[1].name}</span>
                   <b> </b>
                 </span>
               )
             }
           )}
+        </div>
+      </div>
+    )
+  }
+
+  renderEdit() {
+    if (this.state.pagePattern != EDIT) {
+      return null
+    }
+    return (
+      <div>
+        <br/>
+        <div className="form-horizontal">
+          <div className="form-group">
+            <div className="col-xs-offset-2">
+              <p>
+                值机
+              </p>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="edt_in1" className="col-xs-2 control-label">排</label>
+            <div className="col-xs-4">
+              <input id="edt_in1" className="form-control"/>
+            </div>
+            <label htmlFor="edt_in2" className="col-xs-2 control-label">列</label>
+            <div className="col-xs-4">
+              <input id="edt_in2" className="form-control"/>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="edt_chk1" className="col-xs-2 control-label">checkbox</label>
+            <div className="col-xs-4">
+              <label className="checkbox-inline">
+                <input type="checkbox" id="edt_chk1" value="option1"/> 1
+              </label>
+              <label className="checkbox-inline">
+                <input type="checkbox" id="edt_chk2" value="option2"/> 2
+              </label>
+              <label className="checkbox-inline">
+                <input type="checkbox" id="edt_chk3" value="option3"/> 3
+              </label>
+            </div>
+            <label htmlFor="edt_sel1" className="col-xs-2 control-label">select</label>
+            <div className="col-xs-4">
+              <select id="edt_sel1" className="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="edt_in3" className="col-xs-2 control-label">座位</label>
+            <div className="col-xs-10">
+              <input id="edt_in3" className="form-control"/>
+            </div>
+          </div>
+          <div className="form-group">
+            <div className="col-xs-offset-2">
+              <button id="edt_btn1" className="btn btn-default">确认</button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -369,23 +524,9 @@ class Cki extends React.Component {
           </div>
         </nav>
         <div id="mainContainer" className="container-fluid">
-          {this.renderPassengerSelection()}
-          <br/>
-          <div className="row">
-            <div className="col-xs-12">
-              <p>
-                <button className="btn btn-default" onClick={ this.fetchPassengers.bind(this) }>
-                  refresh
-                </button>
-                <b> </b>
-                <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add
-                </button>
-              </p>
-              <ul className="list-group">
-                {this.renderPassengers()}
-              </ul>
-            </div>
-          </div>
+          {this.renderSelection()}
+          {this.renderQuery()}
+          {this.renderEdit()}
         </div>
         <nav className="navbar navbar-default navbar-fixed-bottom">
           <div className="container-fluid">
