@@ -15,6 +15,7 @@ const PREFIX = {
 // private methods
 const showPassengers = Symbol('show-passengers')
 const getDataByEid = Symbol('getDataById')
+const getEditClass = Symbol('getEditClass')
 
 function resizeWin() {
   var ch = document.documentElement.clientHeight;
@@ -40,7 +41,7 @@ class Cki extends React.Component {
       queryActive: DEFAULT_INPUT,
       selectList: [],
       selectActive: BLANK,
-      editList: ['edt_in1', 'edt_in2', 'edt_in3', 'edt_chk1', 'edt_chk2', 'edt_chk3', 'edt_sel1',
+      editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2', 'edt_chk3', 'edt_sel1',
                  'edt_in3', 'edt_btn1'],
       editActive: BLANK,
     }
@@ -118,33 +119,31 @@ class Cki extends React.Component {
    * @param e
    */
   handleWinKeydown(e) {
-    e.preventDefault()
-    e.stopPropagation()
     // console.log("tag " + e.target.tagName)
     const kc = e.keyCode
-    // const ckc = e.ctrlKey
-    // const akc = e.altKey
+    const ckc = e.ctrlKey
+    const akc = e.altKey
     const skc = e.shiftKey
     // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
     let b = null
     if (kc == 112) {
       // f1
-      b = this.keyF1()
+      b = this.keyF1(e)
     } else if (kc == 27) {
       // esc
-      b = this.keyEsc()
-    } else if (kc == 32) {
+      b = this.keyEsc(e)
+    } else if (kc == 32 && !skc && !akc && !ckc) {
       // space
       b = this.keySpace(e)
-    } else if (kc == 13) {
+    } else if (kc == 13 && !skc && !akc && !ckc) {
       // enter
-      b = this.keyEnter()
-    } else if ((kc == 9 && skc) || kc == 37 || kc == 38) {
+      b = this.keyEnter(e)
+    } else if ((kc == 9 && skc && !akc && !ckc) || kc == 37 || kc == 38) {
       // tab arrow-left arrow-up
-      b = this.keyMove(-1)
-    } else if ((kc == 9 && !skc) || kc == 39 || kc == 40) {
+      b = this.keyMove(e, -1)
+    } else if ((kc == 9 && !skc && !akc && !ckc) || kc == 39 || kc == 40) {
       // shift+tab arrow-right arrow-down
-      b = this.keyMove(1)
+      b = this.keyMove(e, 1)
     }
     if (b != null) {
       // console.log(b)
@@ -156,7 +155,7 @@ class Cki extends React.Component {
     }
   }
 
-  keyF1() {
+  keyF1(e) {
     if (this.state.selectPattern != BLANK || this.state.selectList.length < 1) {
       return null
     }
@@ -167,14 +166,14 @@ class Cki extends React.Component {
     }
   }
 
-  keyEsc() {
+  keyEsc(e) {
     if (this.state.selectPattern != BLANK) {
       document.getElementById(DEFAULT_INPUT).focus()
       return {
         selectPattern: BLANK,
       }
     }
-    if(this.state.pagePattern == EDIT){
+    if (this.state.pagePattern == EDIT) {
       document.getElementById(DEFAULT_INPUT).focus()
       return {
         pagePattern: QUERY,
@@ -185,6 +184,8 @@ class Cki extends React.Component {
   keySpace(e) {
     if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY && e.target.tagName
                                                                                 != "INPUT") {
+      e.preventDefault()
+      e.stopPropagation()
       let selectList = this.state.selectList
       for (let [i, a] of selectList.entries()) {
         let dt = this[getDataByEid](a)
@@ -204,6 +205,8 @@ class Cki extends React.Component {
     }
 
     if (this.state.selectPattern != BLANK) {
+      e.preventDefault()
+      e.stopPropagation()
       let selectList = this.state.selectList
       let selectActive = this.state.selectActive
       let activeIndex = [...selectList.entries()].find(ele => ele[1] == selectActive)[0]
@@ -223,12 +226,15 @@ class Cki extends React.Component {
     return null
   }
 
-  keyEnter() {
+  keyEnter(e) {
     // todo mainInput查询
     // 值机
     if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY) {
+      e.preventDefault()
+      e.stopPropagation()
       return {
         pagePattern: EDIT,
+        editActive: this.state.editList[0],
       }
     }
   }
@@ -300,12 +306,14 @@ class Cki extends React.Component {
     this.setState(tmb)
   }
 
-  keyMove(step) {
+  keyMove(e, step) {
     let selectList = this.activeList
     // console.log(selectList)
     if (selectList.length < 2) {
       return
     }
+    e.preventDefault()
+    e.stopPropagation()
     let activeEid = this.activeEid
     let activeIndex = [...selectList.entries()].find(ele => ele[1] == activeEid)[0]
 
@@ -319,6 +327,7 @@ class Cki extends React.Component {
 
     activeEid = selectList[activeIndex]
     document.getElementById(activeEid).focus()
+    console.log(activeEid)
     this.activeEid = activeEid
   }
 
@@ -367,7 +376,7 @@ class Cki extends React.Component {
   }
 
   renderSelection() {
-    if (  this.state.selectList.length < 1) {
+    if (this.state.selectList.length < 1) {
       return null
     }
 
@@ -404,6 +413,17 @@ class Cki extends React.Component {
     )
   }
 
+  [getEditClass](id, tag) {
+    let c = 'form-control'
+    if ('checkbox' == tag) {
+      c = 'checkbox-inline'
+    }
+    if (this.state.editActive == id) {
+      c += " sel-active"
+    }
+    return c
+  }
+
   renderEdit() {
     if (this.state.pagePattern != EDIT) {
       return null
@@ -422,29 +442,29 @@ class Cki extends React.Component {
           <div className="form-group">
             <label htmlFor="edt_in1" className="col-xs-2 control-label">排</label>
             <div className="col-xs-4">
-              <input id="edt_in1" className="form-control"/>
+              <input id="edt_in1" className={this[getEditClass]('edt_in1')}/>
             </div>
             <label htmlFor="edt_in2" className="col-xs-2 control-label">列</label>
             <div className="col-xs-4">
-              <input id="edt_in2" className="form-control"/>
+              <input id="edt_in2" className={this[getEditClass]('edt_in2')}/>
             </div>
           </div>
           <div className="form-group">
             <label htmlFor="edt_chk1" className="col-xs-2 control-label">checkbox</label>
             <div className="col-xs-4">
-              <label className="checkbox-inline">
+              <label className={this[getEditClass]('edt_chk1', 'checkbox')}>
                 <input type="checkbox" id="edt_chk1" value="option1"/> 1
               </label>
-              <label className="checkbox-inline">
+              <label className={this[getEditClass]('edt_chk2', 'checkbox')}>
                 <input type="checkbox" id="edt_chk2" value="option2"/> 2
               </label>
-              <label className="checkbox-inline">
+              <label className={this[getEditClass]('edt_chk3', 'checkbox')}>
                 <input type="checkbox" id="edt_chk3" value="option3"/> 3
               </label>
             </div>
             <label htmlFor="edt_sel1" className="col-xs-2 control-label">select</label>
             <div className="col-xs-4">
-              <select id="edt_sel1" className="form-control">
+              <select id="edt_sel1" className={this[getEditClass]('edt_sel1')}>
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -456,7 +476,7 @@ class Cki extends React.Component {
           <div className="form-group">
             <label htmlFor="edt_in3" className="col-xs-2 control-label">座位</label>
             <div className="col-xs-10">
-              <input id="edt_in3" className="form-control"/>
+              <input id="edt_in3" className={this[getEditClass]('edt_in3')}/>
             </div>
           </div>
           <div className="form-group">
