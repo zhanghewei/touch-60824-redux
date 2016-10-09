@@ -1,4 +1,6 @@
 import React from 'react'
+import pureRender from "pure-render-decorator"
+import Immutable from 'immutable';
 // import SelWrapper from "./components/SelWrapper"
 
 const DEFAULT_INPUT = "mainInput"
@@ -29,11 +31,12 @@ function resizeWin() {
  * - 选择模式
  * - 表单模式
  */
+@pureRender
 class Cki extends React.Component {
   constructor() {
     super()
 
-    this.state = {
+    this.d = {
       passengerData: [],
       pagePattern: QUERY,
       selectPattern: BLANK,
@@ -41,21 +44,32 @@ class Cki extends React.Component {
       queryActive: DEFAULT_INPUT,
       selectList: [],
       selectActive: BLANK,
-      editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2', 'edt_chk3', 'edt_sel1',
+      editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2',
+                 'edt_chk3',
+                 'edt_sel1',
                  'edt_in3', 'edt_btn1'],
       editActive: BLANK,
     }
+    this.state = { immutableData: Immutable.Map(this.d) }
+  }
 
+  set data(data){
+    if(data == null) return
+    const immutableData = this.state.immutableData.merge(data)
+    this.d = immutableData.toJS()
+    this.setState({ immutableData })
   }
 
   fetchPassengers() {
+    // console.log("call fetch pas")
     $.getJSON("passenger.json", (data => {
+      // console.log(`fetch data ${data.length}`)
       this[showPassengers](data)
     }).bind(this))
   }
 
   addPassenger() {
-    let passengerData = this.state.passengerData
+    let passengerData = this.d.passengerData
     passengerData.push(
       {id: passengerData.reduce((maxId, ele) => Math.max(ele.id, maxId), -1) + 1, name: "abcd"})
     this[showPassengers](passengerData)
@@ -66,12 +80,7 @@ class Cki extends React.Component {
     passengerData.map(ele => {
       queryList.push(PREFIX[QUERY] + ele.id)
     })
-    const a = {
-      ...this.state,
-      queryList,
-      passengerData,
-    }
-    this.setState(a)
+    this.data = { queryList, passengerData }
   }
 
   [getDataByEid](eid) {
@@ -88,7 +97,7 @@ class Cki extends React.Component {
     if (rid == null) {
       return null
     }
-    for (let [i, o] of this.state.passengerData.entries()) {
+    for (let [i, o] of this.d.passengerData.entries()) {
       if (o.id == rid) {
         return [i, o]
       }
@@ -146,34 +155,29 @@ class Cki extends React.Component {
       b = this.keyMove(e, 1)
     }
     if (b != null) {
-      // console.log(b)
-      const a = {
-        ...this.state,
-        ...b,
-      }
-      this.setState(a)
+      this.data = b
     }
   }
 
   keyF1(e) {
-    if (this.state.selectPattern != BLANK || this.state.selectList.length < 1) {
+    if (this.d.selectPattern != BLANK || this.d.selectList.length < 1) {
       return null
     }
-    document.getElementById(this.state.selectList[0]).focus()
+    document.getElementById(this.d.selectList[0]).focus()
     return {
       selectPattern: SELECT,
-      selectActive: this.state.selectList[0],
+      selectActive: this.d.selectList[0],
     }
   }
 
   keyEsc(e) {
-    if (this.state.selectPattern != BLANK) {
+    if (this.d.selectPattern != BLANK) {
       document.getElementById(DEFAULT_INPUT).focus()
       return {
         selectPattern: BLANK,
       }
     }
-    if (this.state.pagePattern == EDIT) {
+    if (this.d.pagePattern == EDIT) {
       document.getElementById(DEFAULT_INPUT).focus()
       return {
         pagePattern: QUERY,
@@ -182,21 +186,21 @@ class Cki extends React.Component {
   }
 
   keySpace(e) {
-    if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY && e.target.tagName
+    if (this.d.selectPattern == BLANK && this.d.pagePattern == QUERY && e.target.tagName
                                                                                 != "INPUT") {
       e.preventDefault()
       e.stopPropagation()
-      let selectList = this.state.selectList
+      let selectList = this.d.selectList
       for (let [i, a] of selectList.entries()) {
         let dt = this[getDataByEid](a)
-        if (dt != null && PREFIX[QUERY] + dt[1].id == this.state.queryActive) {
+        if (dt != null && PREFIX[QUERY] + dt[1].id == this.d.queryActive) {
           // 取消选中
           selectList.splice(i, 1)
           return {selectList}
         }
       }
-      for (let p of this.state.passengerData) {
-        if (PREFIX[QUERY] + p.id == this.state.queryActive) {
+      for (let p of this.d.passengerData) {
+        if (PREFIX[QUERY] + p.id == this.d.queryActive) {
           selectList.push(PREFIX[SELECT] + p.id)
           break
         }
@@ -204,11 +208,11 @@ class Cki extends React.Component {
       return {selectList}
     }
 
-    if (this.state.selectPattern != BLANK) {
+    if (this.d.selectPattern != BLANK) {
       e.preventDefault()
       e.stopPropagation()
-      let selectList = this.state.selectList
-      let selectActive = this.state.selectActive
+      let selectList = this.d.selectList
+      let selectActive = this.d.selectActive
       let activeIndex = [...selectList.entries()].find(ele => ele[1] == selectActive)[0]
       selectList.splice(activeIndex, 1)
       if (selectList.length < 1) {
@@ -229,45 +233,45 @@ class Cki extends React.Component {
   keyEnter(e) {
     // todo mainInput查询
     // 值机
-    if (this.state.selectPattern == BLANK && this.state.pagePattern == QUERY) {
+    if (this.d.selectPattern == BLANK && this.d.pagePattern == QUERY) {
       e.preventDefault()
       e.stopPropagation()
       return {
         pagePattern: EDIT,
-        editActive: this.state.editList[0],
+        editActive: this.d.editList[0],
       }
     }
   }
 
   get activeList() {
-    if (this.state.selectPattern == BLANK) {
-      switch (this.state.pagePattern) {
+    if (this.d.selectPattern == BLANK) {
+      switch (this.d.pagePattern) {
         case QUERY:
-          return this.state.queryList
+          return this.d.queryList
         case EDIT:
-          return this.state.editList
+          return this.d.editList
       }
     } else {
-      switch (this.state.selectPattern) {
+      switch (this.d.selectPattern) {
         case SELECT:
-          return this.state.selectList
+          return this.d.selectList
       }
     }
     return []
   }
 
   get activeEid() {
-    if (this.state.selectPattern == BLANK) {
-      switch (this.state.pagePattern) {
+    if (this.d.selectPattern == BLANK) {
+      switch (this.d.pagePattern) {
         case QUERY:
-          return this.state.queryActive
+          return this.d.queryActive
         case EDIT:
-          return this.state.editActive
+          return this.d.editActive
       }
     } else {
-      switch (this.state.selectPattern) {
+      switch (this.d.selectPattern) {
         case SELECT:
-          return this.state.selectActive
+          return this.d.selectActive
       }
     }
     return null
@@ -282,8 +286,8 @@ class Cki extends React.Component {
       tma.selectPattern = BLANK
     }
 
-    if (this.state.selectPattern == BLANK) {
-      switch (this.state.pagePattern) {
+    if (this.d.selectPattern == BLANK) {
+      switch (this.d.pagePattern) {
         case QUERY:
           tma.queryActive = active
           break
@@ -292,18 +296,14 @@ class Cki extends React.Component {
           break
       }
     } else {
-      switch (this.state.selectPattern) {
+      switch (this.d.selectPattern) {
         case SELECT:
           tma.selectActive = active
           break
       }
     }
 
-    const tmb = {
-      ...this.state,
-      ...tma,
-    }
-    this.setState(tmb)
+    this.data = tma
   }
 
   keyMove(e, step) {
@@ -327,23 +327,23 @@ class Cki extends React.Component {
 
     activeEid = selectList[activeIndex]
     document.getElementById(activeEid).focus()
-    console.log(activeEid)
+    // console.log(activeEid)
     this.activeEid = activeEid
   }
 
   renderQuery() {
-    if (this.state.pagePattern != QUERY) {
+    if (this.d.pagePattern != QUERY) {
       return null
     }
 
-    const a = this.state.passengerData.map(
+    const a = this.d.passengerData.map(
       it => {
         const idTxt = PREFIX[QUERY] + it.id
         let itClass = "list-group-item dcs-list"
-        if (this.state.queryActive == idTxt) {
+        if (this.d.queryActive == idTxt) {
           itClass += " sel-active"
         }
-        let active = this.state.selectList.find(ele => ele == PREFIX[SELECT] + it.id) != null
+        let active = this.d.selectList.find(ele => ele == PREFIX[SELECT] + it.id) != null
         if (active) {
           itClass += " active"
         }
@@ -376,12 +376,12 @@ class Cki extends React.Component {
   }
 
   renderSelection() {
-    if (this.state.selectList.length < 1) {
+    if (this.d.selectList.length < 1) {
       return null
     }
 
     let f1BackCls = ""
-    if (SELECT == this.state.pagePattern) {
+    if (SELECT == this.d.pagePattern) {
       f1BackCls += " f1-active"
     }
 
@@ -389,11 +389,11 @@ class Cki extends React.Component {
       <div className="row">
         <div className="col-xs-1">选中区(F1)</div>
         <div className={"col-xs-11" + f1BackCls}>
-          {this.state.selectList.map(
+          {this.d.selectList.map(
             it => {
               const idTxt = it
               let itClass = "label"
-              if (this.state.selectActive == idTxt) {
+              if (this.d.selectActive == idTxt) {
                 itClass += " label-danger"
               } else {
                 itClass += " label-info"
@@ -418,14 +418,14 @@ class Cki extends React.Component {
     if ('checkbox' == tag) {
       c = 'checkbox-inline'
     }
-    if (this.state.editActive == id) {
+    if (this.d.editActive == id) {
       c += " sel-active"
     }
     return c
   }
 
   renderEdit() {
-    if (this.state.pagePattern != EDIT) {
+    if (this.d.pagePattern != EDIT) {
       return null
     }
     return (
@@ -493,7 +493,7 @@ class Cki extends React.Component {
     e.preventDefault()
     e.stopPropagation()
     let id = e.target.id
-    console.log(`trigger focus ${id}`)
+    // console.log(`trigger focus ${id}`)
     // avoid dead loop
     if (id == null || id == this.activeEid) {
       return
@@ -519,7 +519,7 @@ class Cki extends React.Component {
 
   render() {
     let mainInputCls = "form-control"
-    if ("mainInput" == this.state.queryActive) {
+    if ("mainInput" == this.d.queryActive) {
       mainInputCls += " sel-active"
     }
     return (
