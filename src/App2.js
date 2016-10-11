@@ -1,12 +1,13 @@
 import React from 'react'
 import Cki from './Cki'
+import Login from './components/Login'
 
 class App2 extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      // login: false,
-      login: true,
+      login: false,
+      // login: true,
       counter: null,
       pattern: "cki",
       user: {
@@ -38,9 +39,10 @@ class App2 extends React.Component {
       if (this.state.login) {
         return <Cki/>
       } else {
-        return (<div>
-          <button onClick={this.doLogin.bind(this)}>登录</button>
-        </div>)
+        // return (<div>
+        //   <button onClick={this.doLogin.bind(this)}>登录</button>
+        // </div>)
+        return <Login fn={this.doLogin.bind(this)}/>
       }
     })()
   }
