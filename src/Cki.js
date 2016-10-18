@@ -6,6 +6,9 @@ import Immutable from 'immutable';
 const DEFAULT_INPUT = "mainInput"
 const QUERY = 'pattern-query'
 const SELECT = 'pattern-select'
+const SELECT2 = 'pattern-select2'
+const DEVICE = 'pattern-device'
+const NET = 'pattern-net'
 const BLANK = ''
 const EDIT = 'pattern-edit'
 const PREFIX = {
@@ -50,14 +53,16 @@ class Cki extends React.Component {
                  'edt_in3', 'edt_btn1'],
       editActive: BLANK,
     }
-    this.state = { immutableData: Immutable.Map(this.d) }
+    this.state = {immutableData: Immutable.Map(this.d)}
   }
 
-  set data(data){
-    if(data == null) return
+  set data(data) {
+    if (data == null) {
+      return
+    }
     const immutableData = this.state.immutableData.merge(data)
     this.d = immutableData.toJS()
-    this.setState({ immutableData })
+    this.setState({immutableData})
   }
 
   fetchPassengers() {
@@ -80,7 +85,7 @@ class Cki extends React.Component {
     passengerData.map(ele => {
       queryList.push(PREFIX[QUERY] + ele.id)
     })
-    this.data = { queryList, passengerData }
+    this.data = {queryList, passengerData}
   }
 
   [getDataByEid](eid) {
@@ -187,7 +192,7 @@ class Cki extends React.Component {
 
   keySpace(e) {
     if (this.d.selectPattern == BLANK && this.d.pagePattern == QUERY && e.target.tagName
-                                                                                != "INPUT") {
+                                                                        != "INPUT") {
       e.preventDefault()
       e.stopPropagation()
       let selectList = this.d.selectList
@@ -281,24 +286,21 @@ class Cki extends React.Component {
     let tma = {}
 
     if (active.startsWith(PREFIX[SELECT])) {
+      // 选择区
       tma.selectPattern = SELECT
+      tma.selectActive = active
+      tma.queryActive = BLANK
+      tma.editActive = BLANK
     } else {
       tma.selectPattern = BLANK
-    }
-
-    if (this.d.selectPattern == BLANK) {
+      tma.selectActive = BLANK
+      // 主页面
       switch (this.d.pagePattern) {
         case QUERY:
           tma.queryActive = active
           break
         case EDIT:
           tma.editActive = active
-          break
-      }
-    } else {
-      switch (this.d.selectPattern) {
-        case SELECT:
-          tma.selectActive = active
           break
       }
     }
@@ -326,9 +328,9 @@ class Cki extends React.Component {
     }
 
     activeEid = selectList[activeIndex]
-    document.getElementById(activeEid).focus()
     // console.log(activeEid)
     this.activeEid = activeEid
+    document.getElementById(activeEid).focus()
   }
 
   renderQuery() {
@@ -492,10 +494,12 @@ class Cki extends React.Component {
   handleFocus(e) {
     e.preventDefault()
     e.stopPropagation()
+    let a = this.activeEid
+    console.log(`${a} ${e.target.id} ${e.target}`)
     let id = e.target.id
     // console.log(`trigger focus ${id}`)
     // avoid dead loop
-    if (id == null || id == this.activeEid) {
+    if (id == null || id == a) {
       return
     }
     this.activeEid = id
