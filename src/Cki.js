@@ -20,7 +20,7 @@ const PREFIX = {
 // private methods
 const showPassengers = Symbol('show-passengers')
 const getDataByEid = Symbol('getDataById')
-const getEditClass = Symbol('getEditClass')
+const getSelClass = Symbol('getSelClass')
 
 function resizeWin() {
   var ch = document.documentElement.clientHeight;
@@ -50,7 +50,7 @@ class Cki extends React.Component {
       editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2',
                  'edt_chk3',
                  'edt_sel1',
-                 'edt_in3', 'edt_btn1'],
+                 'edt_in3', 'edt_btn1', DEFAULT_INPUT],
       editActive: BLANK,
     }
     this.state = {immutableData: Immutable.Map(this.d)}
@@ -415,12 +415,15 @@ class Cki extends React.Component {
     )
   }
 
-  [getEditClass](id, tag) {
+  [getSelClass](id, tag) {
     let c = 'form-control'
     if ('checkbox' == tag) {
       c = 'checkbox-inline'
     }
-    if (this.d.editActive == id) {
+    if ('button' == tag) {
+      c = 'btn btn-default'
+    }
+    if (this.activeEid == id) {
       c += " sel-active"
     }
     return c
@@ -444,29 +447,29 @@ class Cki extends React.Component {
           <div className="form-group">
             <label htmlFor="edt_in1" className="col-xs-2 control-label">排</label>
             <div className="col-xs-4">
-              <input id="edt_in1" className={this[getEditClass]('edt_in1')}/>
+              <input id="edt_in1" className={this[getSelClass]('edt_in1')} onFocus={this.handleFocus.bind(this)} />
             </div>
             <label htmlFor="edt_in2" className="col-xs-2 control-label">列</label>
             <div className="col-xs-4">
-              <input id="edt_in2" className={this[getEditClass]('edt_in2')}/>
+              <input id="edt_in2" className={this[getSelClass]('edt_in2')} onFocus={this.handleFocus.bind(this)} />
             </div>
           </div>
           <div className="form-group">
             <label htmlFor="edt_chk1" className="col-xs-2 control-label">checkbox</label>
             <div className="col-xs-4">
-              <label className={this[getEditClass]('edt_chk1', 'checkbox')}>
-                <input type="checkbox" id="edt_chk1" value="option1"/> 1
+              <label className={this[getSelClass]('edt_chk1', 'checkbox')}>
+                <input type="checkbox" id="edt_chk1" value="option1" onFocus={this.handleFocus.bind(this)} /> 1
               </label>
-              <label className={this[getEditClass]('edt_chk2', 'checkbox')}>
-                <input type="checkbox" id="edt_chk2" value="option2"/> 2
+              <label className={this[getSelClass]('edt_chk2', 'checkbox')}>
+                <input type="checkbox" id="edt_chk2" value="option2" onFocus={this.handleFocus.bind(this)} /> 2
               </label>
-              <label className={this[getEditClass]('edt_chk3', 'checkbox')}>
-                <input type="checkbox" id="edt_chk3" value="option3"/> 3
+              <label className={this[getSelClass]('edt_chk3', 'checkbox')}>
+                <input type="checkbox" id="edt_chk3" value="option3" onFocus={this.handleFocus.bind(this)} /> 3
               </label>
             </div>
             <label htmlFor="edt_sel1" className="col-xs-2 control-label">select</label>
             <div className="col-xs-4">
-              <select id="edt_sel1" className={this[getEditClass]('edt_sel1')}>
+              <select id="edt_sel1" className={this[getSelClass]('edt_sel1')} onFocus={this.handleFocus.bind(this)} >
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -478,12 +481,12 @@ class Cki extends React.Component {
           <div className="form-group">
             <label htmlFor="edt_in3" className="col-xs-2 control-label">座位</label>
             <div className="col-xs-10">
-              <input id="edt_in3" className={this[getEditClass]('edt_in3')}/>
+              <input id="edt_in3" className={this[getSelClass]('edt_in3')} onFocus={this.handleFocus.bind(this)} />
             </div>
           </div>
           <div className="form-group">
             <div className="col-xs-offset-2">
-              <button id="edt_btn1" className="btn btn-default">确认</button>
+              <button id="edt_btn1" className={this[getSelClass]('edt_btn1', 'button')} onFocus={this.handleFocus.bind(this)} >确认</button>
             </div>
           </div>
         </div>
@@ -495,7 +498,7 @@ class Cki extends React.Component {
     e.preventDefault()
     e.stopPropagation()
     let a = this.activeEid
-    console.log(`${a} ${e.target.id} ${e.target}`)
+    // console.log(`${a} ${e.target.id} ${e.target}`)
     let id = e.target.id
     // console.log(`trigger focus ${id}`)
     // avoid dead loop
@@ -522,10 +525,10 @@ class Cki extends React.Component {
   }
 
   render() {
-    let mainInputCls = "form-control"
-    if ("mainInput" == this.d.queryActive) {
-      mainInputCls += " sel-active"
-    }
+    // let mainInputCls = "form-control"
+    // if ("mainInput" == this.d.queryActive) {
+    //   mainInputCls += " sel-active"
+    // }
     return (
       <div>
         <nav className="navbar navbar-default" style={{marginBottom: 0}}>
@@ -534,7 +537,7 @@ class Cki extends React.Component {
               <div className="col-xs-1"></div>
               <div className="col-xs-10">
                 <div className="input-group" style={{paddingTop: ".5em"}}>
-                  <input id="mainInput" key="mainInput" className={mainInputCls}
+                  <input id="mainInput" key="mainInput" className={this[getSelClass](DEFAULT_INPUT)}
                          onFocus={this.handleFocus.bind(this)} tabIndex="-1"/>
                   <span className="input-group-btn">
                   <button className="btn btn-default" tabIndex="-1">
