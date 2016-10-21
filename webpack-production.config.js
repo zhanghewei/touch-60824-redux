@@ -11,7 +11,7 @@ const config = {
   // output config
   output: {
     path: buildPath, // Path of output file
-    filename: 'bundle.js', // Name of output file
+    filename: 'app.js', // Name of output file
   },
   plugins: [
     // Define production build to allow React to strip out unnecessary checks

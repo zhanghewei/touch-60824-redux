@@ -5,7 +5,7 @@ var config = require('./webpack.config')
 var express = require('express')
 
 var app = new (require('express'))()
-var port = 3001
+var port = 3000
 
 var compiler = webpack(config)
 app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }))
@@ -15,7 +15,7 @@ app.use(express.static("www"))
 //   res.sendFile(__dirname + '/www/index.html')
 // })
 
-app.listen(port, function(error) {
+app.listen(port, '0.0.0.0', function(error) {
   if (error) {
     console.error(error)
   } else {

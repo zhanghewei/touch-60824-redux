@@ -2,12 +2,12 @@ import React from 'react'
 import Cki from './Cki'
 import Login from './components/Login'
 
-class App2 extends React.Component {
+class Main extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      login: false,
-      // login: true,
+      // login: false,
+      login: true,
       counter: null,
       pattern: "cki",
       user: {
@@ -48,4 +48,4 @@ class App2 extends React.Component {
   }
 }
 
-export default App2
+export default Main

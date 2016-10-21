@@ -154,10 +154,10 @@ class Cki extends React.Component {
       b = this.keyEnter(e)
     } else if ((kc == 9 && skc && !akc && !ckc) || kc == 37 || kc == 38) {
       // tab arrow-left arrow-up
-      b = this.keyMove(e, -1)
+      b = this.keyMove(e, -1, kc)
     } else if ((kc == 9 && !skc && !akc && !ckc) || kc == 39 || kc == 40) {
       // shift+tab arrow-right arrow-down
-      b = this.keyMove(e, 1)
+      b = this.keyMove(e, 1, kc)
     }
     if (b != null) {
       this.data = b
@@ -308,7 +308,10 @@ class Cki extends React.Component {
     this.data = tma
   }
 
-  keyMove(e, step) {
+  keyMove(e, step, kc) {
+    if((kc == 37 || kc == 39) && e.target.tagName == 'INPUT' && e.target.type == 'text'){
+      return
+    }
     let selectList = this.activeList
     // console.log(selectList)
     if (selectList.length < 2) {
@@ -364,7 +367,7 @@ class Cki extends React.Component {
           <div className="col-xs-12">
             <p>
               <button className="btn btn-default" onClick={ this.fetchPassengers.bind(this) }>
-                refresh
+                refresh 22
               </button>
               <b> </b>
               <button className="btn btn-default" onClick={ this.addPassenger.bind(this) }>add
