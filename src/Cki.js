@@ -7,7 +7,7 @@ import * as C from './Constants'
 import * as F from './Functions'
 
 // private methods
-const getDataByEid = Symbol('getDataById')
+// const getDataByEid = Symbol('getDataById')
 // const getSelClass = Symbol('getSelClass')
 
 /**
@@ -44,8 +44,21 @@ class Cki extends React.Component {
                 'edt_in3', 'edt_btn1'],
         }
         this.state = {immutableState: Immutable.Map(this.s)}
+        /**
+         * {
+         *  whenkey: func,
+         *  dokey: func,
+         * }
+         * @type {Array}
+         */
+        this.handlers = []
+        this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1.bind(this))
     }
 
+    /**
+     * context for child items
+     * @returns {{activeEid: *, handleFocus: (function(this:Cki))}}
+     */
     getChildContext(){
         return {
             activeEid: this.s.activeEid,
@@ -57,7 +70,7 @@ class Cki extends React.Component {
      * 触发状态变更
      * @param data
      */
-    set data(data) {
+    updatedata(data) {
         if (!data) {
             return
         }
@@ -95,7 +108,7 @@ class Cki extends React.Component {
         }
         // console.log(`active is ${active}, block is ${tma.block}`)
         tma.activeEid = active
-        this.data = tma
+        this.updatedata(tma)
     }
 
     /**
@@ -123,14 +136,14 @@ class Cki extends React.Component {
             passengerData.map(ele => {
                 queryList.push(C.PREFIX[C.BLOCK_LIST] + ele.id)
             })
-            this.data = {
+            this.updatedata({
                 queryList,
                 passengerData,
                 page: C.PAGE_QUERY,
                 block: C.BLOCK_LIST,
                 defaultBlock: C.BLOCK_LIST,
                 activeEid: C.DEFAULT_INPUT,
-            }
+            })
         }).bind(this))
     }
 
@@ -142,41 +155,41 @@ class Cki extends React.Component {
         passengerData.map(ele => {
             queryList.push(C.PREFIX[C.BLOCK_LIST] + ele.id)
         })
-        this.data = {
+        this.updatedata({
             queryList,
             passengerData,
             activeEid: C.PREFIX[C.BLOCK_LIST] + newId,
-        }
+        })
     }
 
-    /**
-     * 根据元素id获取对应数据
-     *
-     * todo 目前只用于选中区元素
-     * @param eid
-     * @returns {*}
-     */
-    [getDataByEid](eid) {
-        if (eid == null) {
-            return false
-        }
-        let dataId = C.BLANK
-        for (const k of Object.keys(C.PREFIX)) {
-            const v = C.PREFIX[k]
-            if (eid.startsWith(v)) {
-                dataId = eid.substring(v.length, eid.length)
-            }
-        }
-        if (dataId == C.BLANK) {
-            return false
-        }
-        for (const [i, o] of this.s.passengerData.entries()) {
-            if (o.id == dataId) {
-                return [i, o]
-            }
-        }
-        return false
-    }
+    // /**
+    //  * 根据元素id获取对应数据
+    //  *
+    //  * todo 目前只用于选中区元素
+    //  * @param eid
+    //  * @returns {*}
+    //  */
+    // [getDataByEid](eid) {
+    //     if (eid == null) {
+    //         return false
+    //     }
+    //     let dataId = C.BLANK
+    //     for (const k of Object.keys(C.PREFIX)) {
+    //         const v = C.PREFIX[k]
+    //         if (eid.startsWith(v)) {
+    //             dataId = eid.substring(v.length, eid.length)
+    //         }
+    //     }
+    //     if (dataId == C.BLANK) {
+    //         return false
+    //     }
+    //     for (const [i, o] of this.s.passengerData.entries()) {
+    //         if (o.id == dataId) {
+    //             return [i, o]
+    //         }
+    //     }
+    //     return false
+    // }
 
     /**
      * 键盘导航
@@ -208,9 +221,15 @@ class Cki extends React.Component {
         const akc = e.altKey
         const skc = e.shiftKey
         // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
+        const h = this.handlers.find( ele => ele.whenkey(e))
+        if(h != null){
+            console.log('trig event ${h.name}')
+            return h.dokey(e)
+        }
+
         let b
         if (kc == 112) {
-            b = this.keyF1(e)
+            // b = this.keyF1(e)
         } else if (kc == 116) {
             b = this.keyF5(e)
         } else if (kc == 27) {
@@ -227,8 +246,17 @@ class Cki extends React.Component {
             b = this.keyMove(1, e, etn, ett, kc)
         }
         if (!!b) {
-            this.data = b
+            this.updatedata(b)
         }
+    }
+
+    loadHandler(name, whenkey, dokey) {
+        this.handlers.push({name, whenkey, dokey})
+    }
+
+    unloadHandler(name){
+        const hn = this.handlers.entries().find(ele => ele[1].name == name)
+        this.handlers = this.handlers.splice(hn[0], 1)
     }
 
     /**
@@ -298,7 +326,7 @@ class Cki extends React.Component {
             F.stopEvent(e)
             const selectList = this.s.selectList
             for (const [i, a] of selectList.entries()) {
-                let dt = this[getDataByEid](a)
+                let dt = F.getDataByEid(a, this.s.passengerData)
                 if (dt != null && C.PREFIX[C.BLOCK_LIST] + dt[1].id == this.s.activeEid) {
                     // 取消选中
                     selectList.splice(i, 1)
@@ -324,10 +352,10 @@ class Cki extends React.Component {
         selectList.splice(activeIndex, 1)
         if (selectList.length < 1) {
             document.getElementById(this.s.defaultActive).focus()
-            this.data = {
+            this.updatedata({
                 selectList,
                 block: this.s.defaultBlock,
-            }
+            })
         } else {
             activeIndex--
             if (activeIndex < 0) {
@@ -335,7 +363,7 @@ class Cki extends React.Component {
             }
             activeEid = selectList[activeIndex]
             document.getElementById(activeEid).focus()
-            this.data = {selectList, activeEid}
+            this.updatedata({selectList, activeEid})
         }
     }
 
@@ -455,15 +483,15 @@ class Cki extends React.Component {
                         {this.s.selectList.map(
                             it => {
                                 const b = "btn btn-xs btn-" + (this.s.activeEid == it ? 'danger' : 'default')
-                                const dt = this[getDataByEid](it)
+                                const dt = F.getDataByEid(it, this.s.passengerData)
                                 return (
                                     <span key={it}>
-                    <button id={it} className={b} onFocus={this.handleFocus.bind(this)}
-                            onClick={this.handleClickSelect.bind(this)}>
-                      <span className="glyphicon glyphicon-user">{dt[1].name}</span>
-                    </button>
-                    <b> </b>
-                  </span>
+                                    <button id={it} className={b} onFocus={this.handleFocus.bind(this)}
+                                            onClick={this.handleClickSelect.bind(this)}>
+                                      <span className="glyphicon glyphicon-user">{dt[1].name}</span>
+                                    </button>
+                                    <b> </b>
+                                  </span>
                                 )
                             }
                         )}
@@ -488,6 +516,7 @@ class Cki extends React.Component {
     componentWillMount() {
         window.addEventListener('resize', F.resizeWin)
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))
+        // this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1)
     }
 
     componentDidMount() {
@@ -499,6 +528,7 @@ class Cki extends React.Component {
     componentWillUnmount() {
         window.removeEventListener('resize', F.resizeWin)
         window.removeEventListener('keydown', this.handleWinKeydown)
+        // this.unloadHandler('keyF1')
     }
 
     render() {
