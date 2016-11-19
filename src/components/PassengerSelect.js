@@ -35,8 +35,7 @@ class PassengerSelect extends React.Component {
     render() {
         const p = this.props.immutableProps.toJS()
         const activeEid = this.context.activeEid
-        const handleFocus = this.context.handleFocus
-        
+
         return (
             <div className="panel panel-default">
                 <div className="panel-body">
@@ -68,6 +67,6 @@ PassengerSelect.propTypes = {
 }
 PassengerSelect.contextTypes = {
     activeEid: React.PropTypes.string,
-    handleFocus: React.PropTypes.func,
+    updatedata: React.PropTypes.func,
 }
 export default PassengerSelect
