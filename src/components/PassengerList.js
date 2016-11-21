@@ -7,17 +7,14 @@ import PassengerListItem from './PassengerListItem'
 
 @pureRender
 class PassengerList extends React.Component {
-    get p() {
-        return this.props.immutableProps.toJS()
-    }
-
     render() {
+        const p = this.props.immutableProps.toJS()
         // console.log(this.props.key)
-        const a = this.p.passengerData.map(
+        const a = p.passengerData.map(
             it => {
                 const b = C.PREFIX[C.BLOCK_LIST] + it.id
                 // 是否在选中区
-                const isSelection = this.p.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
+                const isSelection = p.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
                     != null
                 return (
                     <PassengerListItem key={b} isSelection={isSelection}

@@ -9,7 +9,7 @@ class PassengerSelect extends React.Component {
     handleClickSelect(e) {
         F.stopEvent(e)
         const p = this.props.immutableProps.toJS()
-        const updatedata = this.context.updatedata
+        const updateData = this.context.updateData
         let activeEid = this.context.activeEid
 
         const selectList = p.selectList
@@ -17,7 +17,7 @@ class PassengerSelect extends React.Component {
         selectList.splice(activeIndex, 1)
         if (selectList.length < 1) {
             document.getElementById(p.defaultActive).focus()
-            updatedata({
+            updateData({
                 selectList,
                 block: p.defaultBlock,
             })
@@ -28,14 +28,15 @@ class PassengerSelect extends React.Component {
             }
             activeEid = selectList[activeIndex]
             document.getElementById(activeEid).focus()
-            this.updatedata({selectList, activeEid})
+            updateData({selectList, activeEid})
         }
     }
 
     render() {
         const p = this.props.immutableProps.toJS()
         const activeEid = this.context.activeEid
-
+        const handleFocus = this.context.handleFocus
+        const a = C.BLOCK_SELECT == p.page ? ' f1-active' : ''
         return (
             <div className="panel panel-default">
                 <div className="panel-body">
@@ -67,6 +68,7 @@ PassengerSelect.propTypes = {
 }
 PassengerSelect.contextTypes = {
     activeEid: React.PropTypes.string,
-    updatedata: React.PropTypes.func,
+    handleFocus: React.PropTypes.func,
+    updateData: React.PropTypes.func,
 }
 export default PassengerSelect

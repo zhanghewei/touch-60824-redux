@@ -1,14 +1,9 @@
 import React from 'react'
 import pureRender from "pure-render-decorator"
 import Immutable from 'immutable'
-import PassengerList from './components/PassengerList'
-import PassengerEdit from './components/PassengerEdit'
+import PassengerPage from './components/PassengerPage'
 import * as C from './Constants'
 import * as F from './Functions'
-
-// private methods
-// const getDataByEid = Symbol('getDataById')
-// const getSelClass = Symbol('getSelClass')
 
 /**
  * 操作模式
@@ -63,6 +58,7 @@ class Cki extends React.Component {
         return {
             activeEid: this.s.activeEid,
             handleFocus: this.handleFocus.bind(this),
+            updateData: this.updateData.bind(this),
         }
     }
 
@@ -70,7 +66,7 @@ class Cki extends React.Component {
      * 触发状态变更
      * @param data
      */
-    updatedata(data) {
+    updateData(data) {
         if (!data) {
             return
         }
@@ -108,7 +104,7 @@ class Cki extends React.Component {
         }
         // console.log(`active is ${active}, block is ${tma.block}`)
         tma.activeEid = active
-        this.updatedata(tma)
+        this.updateData(tma)
     }
 
     /**
@@ -136,7 +132,7 @@ class Cki extends React.Component {
             passengerData.map(ele => {
                 queryList.push(C.PREFIX[C.BLOCK_LIST] + ele.id)
             })
-            this.updatedata({
+            this.updateData({
                 queryList,
                 passengerData,
                 page: C.PAGE_QUERY,
@@ -146,50 +142,6 @@ class Cki extends React.Component {
             })
         }).bind(this))
     }
-
-    addPassenger() {
-        const passengerData = this.s.passengerData
-        const newId = passengerData.reduce((maxId, ele) => Math.max(ele.id, maxId), -1) + 1
-        passengerData.push({id: newId, name: "abcdaaa"})
-        const queryList = [C.DEFAULT_INPUT]
-        passengerData.map(ele => {
-            queryList.push(C.PREFIX[C.BLOCK_LIST] + ele.id)
-        })
-        this.updatedata({
-            queryList,
-            passengerData,
-            activeEid: C.PREFIX[C.BLOCK_LIST] + newId,
-        })
-    }
-
-    // /**
-    //  * 根据元素id获取对应数据
-    //  *
-    //  * todo 目前只用于选中区元素
-    //  * @param eid
-    //  * @returns {*}
-    //  */
-    // [getDataByEid](eid) {
-    //     if (eid == null) {
-    //         return false
-    //     }
-    //     let dataId = C.BLANK
-    //     for (const k of Object.keys(C.PREFIX)) {
-    //         const v = C.PREFIX[k]
-    //         if (eid.startsWith(v)) {
-    //             dataId = eid.substring(v.length, eid.length)
-    //         }
-    //     }
-    //     if (dataId == C.BLANK) {
-    //         return false
-    //     }
-    //     for (const [i, o] of this.s.passengerData.entries()) {
-    //         if (o.id == dataId) {
-    //             return [i, o]
-    //         }
-    //     }
-    //     return false
-    // }
 
     /**
      * 键盘导航
@@ -246,7 +198,7 @@ class Cki extends React.Component {
             b = this.keyMove(1, e, etn, ett, kc)
         }
         if (!!b) {
-            this.updatedata(b)
+            this.updateData(b)
         }
     }
 
@@ -344,29 +296,6 @@ class Cki extends React.Component {
         return false
     }
 
-    handleClickSelect(e) {
-        F.stopEvent(e)
-        const selectList = this.s.selectList
-        let activeEid = this.s.activeEid
-        let activeIndex = [...selectList.entries()].find(ele => ele[1] == activeEid)[0]
-        selectList.splice(activeIndex, 1)
-        if (selectList.length < 1) {
-            document.getElementById(this.s.defaultActive).focus()
-            this.updatedata({
-                selectList,
-                block: this.s.defaultBlock,
-            })
-        } else {
-            activeIndex--
-            if (activeIndex < 0) {
-                activeIndex++
-            }
-            activeEid = selectList[activeIndex]
-            document.getElementById(activeEid).focus()
-            this.updatedata({selectList, activeEid})
-        }
-    }
-
     /**
      * 触发操作
      * @param e
@@ -425,94 +354,6 @@ class Cki extends React.Component {
         document.getElementById(activeEid).focus()
     }
 
-    renderOperator() {
-        const a = C.BLOCK_OPERATOR == this.s.page ? ' f1-active' : ''
-        const activeEid = this.s.activeEid
-        return (
-            <div className="panel panel-default">
-                <div className="panel-body">
-                    <div className="col-xs-1"><span className="glyphicon glyphicon-wrench">F5</span></div>
-                    <div className={"col-xs-11" + a}>
-                        <button id="ope_1" className={F.getSelClass(activeEid == 'ope_1', 'button')}
-                                onFocus={this.handleFocus.bind(this)}
-                                onClick={ this.fetchPassengers.bind(this) }>
-                            <span className="glyphicon glyphicon-refresh">Alt-Q</span>
-                        </button>
-                        <b> </b>
-                        <button id="ope_2" className={F.getSelClass(activeEid == 'ope_2', 'button')}
-                                onFocus={this.handleFocus.bind(this)}
-                                onClick={ this.addPassenger.bind(this) }>
-                            <span className="glyphicon glyphicon-plus">Alt-B</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    /**
-     * 旅客列表
-     * @returns {*}
-     */
-    renderQuery() {
-        if (this.s.page == C.PAGE_QUERY) {
-            const p = {
-                passengerData: this.s.passengerData,
-                selectList: this.s.selectList,
-            }
-            return (
-                <PassengerList immutableProps={Immutable.Map(p)}/>
-            )
-        }
-    }
-
-    /**
-     * 选中区1
-     * @returns {*}
-     */
-    renderSelect() {
-        if (this.s.selectList.length < 1) {
-            return null
-        }
-        const a = C.BLOCK_SELECT == this.s.page ? ' f1-active' : ''
-        return (
-            <div className="panel panel-default">
-                <div className="panel-body">
-                    <div className="col-xs-1"><span className="glyphicon glyphicon-user"></span>F1</div>
-                    <div className={"col-xs-11" + a}>
-                        {this.s.selectList.map(
-                            it => {
-                                const b = "btn btn-xs btn-" + (this.s.activeEid == it ? 'danger' : 'default')
-                                const dt = F.getDataByEid(it, this.s.passengerData)
-                                return (
-                                    <span key={it}>
-                                    <button id={it} className={b} onFocus={this.handleFocus.bind(this)}
-                                            onClick={this.handleClickSelect.bind(this)}>
-                                      <span className="glyphicon glyphicon-user">{dt[1].name}</span>
-                                    </button>
-                                    <b> </b>
-                                  </span>
-                                )
-                            }
-                        )}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    /**
-     * 编辑界面
-     * @returns {*}
-     */
-    renderEdit() {
-        if (this.s.page == C.PAGE_EDIT) {
-            return (
-                <PassengerEdit immutableProps={{}}/>
-            )
-        }
-    }
-
     componentWillMount() {
         window.addEventListener('resize', F.resizeWin)
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))
@@ -532,78 +373,15 @@ class Cki extends React.Component {
     }
 
     render() {
-        const activeEid = this.s.activeEid
+        const p = {
+            page: this.s.page,
+            defaultBlock: this.s.defaultBlock,
+            defaultActive: this.s.defaultActive,
+            passengerData: this.s.passengerData,
+            selectList: this.s.selectList,
+        }
         return (
-            <div>
-                <nav className="navbar navbar-default" style={{marginBottom: 0}}>
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-xs-12">
-                                <div className="input-group" style={{paddingTop: ".5em"}}>
-                                  <span className="input-group-btn">
-                                  <button className="btn btn-default" tabIndex="-1" title="返回">
-                                    <span className="glyphicon glyphicon-menu-left">Esc</span>
-                                  </button>
-                                  </span>
-                                    <input id="mainInput" key="mainInput"
-                                           className={F.getSelClass(activeEid == C.DEFAULT_INPUT)}
-                                           onFocus={this.handleFocus.bind(this)} tabIndex="-1"
-                                           style={{marginLeft: 2}}/>
-                                    <span className="input-group-btn">
-                                  <button className="btn btn-default" tabIndex="-1" style={{marginLeft: 3}}>
-                                    Enter<span className="glyphicon glyphicon-menu-right"></span>
-                                  </button>
-                                  </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-                <div id="mainContainer" className="container-fluid">
-                    {this.renderSelect()}
-                    {this.renderOperator()}
-                    {this.renderQuery()}
-                    {this.renderEdit()}
-                </div>
-                <nav className="navbar navbar-default navbar-fixed-bottom">
-                    <div className="container-fluid" style={{paddingTop: '1em'}}>
-                        <div className="row">
-                            <div className="col-xs-1">
-                                <span className="glyphicon glyphicon-tasks">F6</span>
-                            </div>
-                            <div className="col-xs-7">
-                                <button className="btn btn-xs btn-success">
-                                    <span className="glyphicon glyphicon-print">登机牌打印机</span>
-                                </button>
-                                <b> </b>
-                                <button className="btn btn-xs btn-success">
-                                    <span className="glyphicon glyphicon-print">行李条打印机</span>
-                                </button>
-                                <b> </b>
-                                <button className="btn btn-xs btn-success">
-                                    <span className="glyphicon glyphicon-eye-open">身份证阅读器</span>
-                                </button>
-                                <b> </b>
-                                <button className="btn btn-xs btn-danger">
-                                    <span className="glyphicon glyphicon-camera">登机牌扫描枪</span>
-                                </button>
-                            </div>
-                            <div className="col-xs-3 text-right">
-                                <button className="btn btn-xs btn-success">
-                                    <span className="glyphicon glyphicon-globe">正常</span>
-                                </button>
-                                <b> </b>
-                                <button className="btn btn-xs btn-default">
-                                    <span className="glyphicon glyphicon-log-out">退出</span>
-                                </button>
-                            </div>
-                            <div className="col-xs-1 text-right">
-                                <span className="glyphicon glyphicon-cog">F8</span>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
+            <PassengerPage immutableProps={Immutable.Map(p)} fetchPassengers={this.fetchPassengers.bind(this)}/>
         )
     }
 }
@@ -611,6 +389,7 @@ class Cki extends React.Component {
 Cki.childContextTypes = {
     activeEid: React.PropTypes.string,
     handleFocus: React.PropTypes.func,
+    updateData: React.PropTypes.func,
 }
 
 export default Cki

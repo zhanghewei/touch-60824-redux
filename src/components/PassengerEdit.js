@@ -6,9 +6,6 @@ import * as F from '../Functions'
 
 @pureRender
 class PassengerEdit extends React.Component {
-    get p() {
-        return this.props.immutableProps.toJS()
-    }
     render() {
         const activeEid = this.context.activeEid
         const handleFocus = this.context.handleFocus

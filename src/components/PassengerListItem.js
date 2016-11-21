@@ -6,13 +6,9 @@ import * as F from '../Functions'
 
 @pureRender
 class PassengerListItem extends React.Component {
-    get p() {
-        return this.props.immutableProps.toJS()
-    }
-
     render() {
         // console.log(this.props.key)
-        const p = this.p
+        const p = this.props.immutableProps.toJS()
         const activeEid = this.context.activeEid;
         const handleFocus = this.context.handleFocus;
         const b = C.PREFIX[C.BLOCK_LIST] + p.id
