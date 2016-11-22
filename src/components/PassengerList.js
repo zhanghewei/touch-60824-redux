@@ -9,8 +9,9 @@ import PassengerListItem from './PassengerListItem'
 class PassengerList extends React.Component {
     render() {
         const p = this.props.immutableProps.toJS()
+        const c = this.context.immutableContext.toJS()
         // console.log(this.props.key)
-        const a = p.passengerData.map(
+        const a = c.passengerData.map(
             it => {
                 const b = C.PREFIX[C.BLOCK_LIST] + it.id
                 // 是否在选中区
@@ -36,5 +37,8 @@ class PassengerList extends React.Component {
 }
 PassengerList.propTypes = {
     immutableProps: React.PropTypes.any.isRequired,
+}
+PassengerList.contextTypes = {
+    immutableContext: React.PropTypes.any,
 }
 export default PassengerList

@@ -8,7 +8,8 @@ import * as F from '../Functions'
 class PassengerOperator extends React.Component {
     addPassenger() {
         const p = this.props.immutableProps.toJS()
-        const passengerData = p.passengerData
+        const c = this.context.immutableContext.toJS()
+        const passengerData = c.passengerData
         const updateData = this.context.updateData
         const newId = passengerData.reduce((maxId, ele) => Math.max(ele.id, maxId), -1) + 1
         passengerData.push({id: newId, name: "abcdaaa"})
@@ -24,7 +25,8 @@ class PassengerOperator extends React.Component {
     }
     render() {
         const p = this.props.immutableProps.toJS()
-        const activeEid = this.context.activeEid
+        const c = this.context.immutableContext.toJS()
+        const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
         const fetchPassengers = this.props.fetchPassengers
         const a = C.BLOCK_OPERATOR == p.page ? ' f1-active' : ''
@@ -55,7 +57,7 @@ PassengerOperator.propTypes = {
     fetchPassengers: React.PropTypes.func.isRequired,
 }
 PassengerOperator.contextTypes = {
-    activeEid: React.PropTypes.string,
+    immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,
 }

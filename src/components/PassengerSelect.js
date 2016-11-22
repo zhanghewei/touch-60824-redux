@@ -9,8 +9,9 @@ class PassengerSelect extends React.Component {
     handleClickSelect(e) {
         F.stopEvent(e)
         const p = this.props.immutableProps.toJS()
+        const c = this.context.immutableContext.toJS()
         const updateData = this.context.updateData
-        let activeEid = this.context.activeEid
+        let activeEid = c.activeEid
 
         const selectList = p.selectList
         let activeIndex = [...selectList.entries()].find(ele => ele[1] == activeEid)[0]
@@ -34,7 +35,8 @@ class PassengerSelect extends React.Component {
 
     render() {
         const p = this.props.immutableProps.toJS()
-        const activeEid = this.context.activeEid
+        const c = this.context.immutableContext.toJS()
+        const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
         const a = C.BLOCK_SELECT == p.page ? ' f1-active' : ''
         return (
@@ -45,15 +47,15 @@ class PassengerSelect extends React.Component {
                         {p.selectList.map(
                             it => {
                                 const b = "btn btn-xs btn-" + (activeEid == it ? 'danger' : 'default')
-                                const dt = F.getDataByEid(it, p.passengerData)
+                                const dt = F.getDataByEid(it, c.passengerData)
                                 return (
                                     <span key={it}>
-                                    <button id={it} className={b} onFocus={handleFocus}
-                                            onClick={this.handleClickSelect.bind(this)}>
-                                      <span className="glyphicon glyphicon-user">{dt[1].name}</span>
-                                    </button>
-                                    <b> </b>
-                                  </span>
+                                        <button id={it} className={b} onFocus={handleFocus}
+                                                onClick={this.handleClickSelect.bind(this)}>
+                                          <span className="glyphicon glyphicon-user">{dt[1].name}</span>
+                                        </button>
+                                        <b> </b>
+                                    </span>
                                 )
                             }
                         )}
@@ -67,7 +69,7 @@ PassengerSelect.propTypes = {
     immutableProps: React.PropTypes.any.isRequired,
 }
 PassengerSelect.contextTypes = {
-    activeEid: React.PropTypes.string,
+    immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,
 }

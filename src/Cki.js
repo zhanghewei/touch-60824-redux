@@ -55,7 +55,16 @@ class Cki extends React.Component {
      * @returns {{activeEid: *, handleFocus: (function(this:Cki))}}
      */
     getChildContext(){
+        const c = {
+            passengerData: this.s.passengerData,
+            page: this.s.page,
+            defaultBlock: this.s.defaultBlock,
+            defaultActive: this.s.defaultActive,
+            selectList: this.s.selectList,
+            activeEid: this.s.activeEid,
+        }
         return {
+            immutableContext: Immutable.Map(c),
             activeEid: this.s.activeEid,
             handleFocus: this.handleFocus.bind(this),
             updateData: this.updateData.bind(this),
@@ -387,6 +396,7 @@ class Cki extends React.Component {
 }
 
 Cki.childContextTypes = {
+    immutableContext: React.PropTypes.any,
     activeEid: React.PropTypes.string,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,

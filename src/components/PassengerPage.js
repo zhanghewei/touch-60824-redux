@@ -10,15 +10,10 @@ import PassengerOperator from './PassengerOperator'
 
 @pureRender
 class PassengerPage extends React.Component {
-    // constructor(){
-    //     super()
-    //     // this.p = this.props.immutableProps.toJS()
-    // }
     renderOperator() {
         const pp = this.props.immutableProps.toJS()
         const p = {
             page: pp.page,
-            passengerData: pp.passengerData,
         }
         const fetchPassengers = this.props.fetchPassengers
         return (
@@ -34,7 +29,6 @@ class PassengerPage extends React.Component {
         const pp = this.props.immutableProps.toJS()
         if (pp.page == C.PAGE_QUERY) {
             const p = {
-                passengerData: pp.passengerData,
                 selectList: pp.selectList,
             }
             return (
@@ -54,7 +48,6 @@ class PassengerPage extends React.Component {
                 page: pp.page,
                 defaultBlock: pp.defaultBlock,
                 defaultActive: pp.defaultActive,
-                passengerData: pp.passengerData,
                 selectList: pp.selectList,
             }
             return (
@@ -77,7 +70,8 @@ class PassengerPage extends React.Component {
     }
 
     render() {
-        const activeEid = this.context.activeEid
+        const c = this.context.immutableContext.toJS()
+        const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
         return (
             <div>
@@ -158,7 +152,7 @@ PassengerPage.propTypes = {
     fetchPassengers: React.PropTypes.func.isRequired,
 }
 PassengerPage.contextTypes = {
-    activeEid: React.PropTypes.string,
+    immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,
 }

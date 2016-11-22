@@ -7,7 +7,8 @@ import * as F from '../Functions'
 @pureRender
 class PassengerEdit extends React.Component {
     render() {
-        const activeEid = this.context.activeEid
+        const c = this.context.immutableContext.toJS()
+        const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
         return (
             <div>
@@ -83,7 +84,7 @@ PassengerEdit.propTypes = {
     immutableProps: React.PropTypes.any.isRequired,
 }
 PassengerEdit.contextTypes = {
-    activeEid: React.PropTypes.string,
+    immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
 }
 export default PassengerEdit
