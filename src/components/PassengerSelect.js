@@ -70,6 +70,7 @@ PassengerSelect.propTypes = {
 }
 PassengerSelect.contextTypes = {
     immutableContext: React.PropTypes.any,
+    activeEid: React.PropTypes.string,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,
 }
