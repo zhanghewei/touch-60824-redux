@@ -6,7 +6,7 @@ import * as F from '../Functions'
 
 @pureRender
 class KeyNav extends React.Component {
-    constructor(){
+    constructor() {
         super()
         /**
          * {
@@ -17,6 +17,7 @@ class KeyNav extends React.Component {
          */
         this.handlers = []
         this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1.bind(this))
+        this.loadHandler('keyEnter', (e) => e.keyCode == 13, this.keyEnter.bind(this))
     }
 
     /**
@@ -49,8 +50,8 @@ class KeyNav extends React.Component {
         const akc = e.altKey
         const skc = e.shiftKey
         // console.log(`Win key code ${kc}, alt ${akc}, shift ${skc}, ctrl ${ckc}`)
-        const h = this.handlers.find( ele => ele.whenkey(e))
-        if(h != null){
+        const h = this.handlers.find(ele => ele.whenkey(e))
+        if (h != null) {
             console.log('trig event ${h.name}')
             return h.dokey(e)
         }
@@ -82,7 +83,7 @@ class KeyNav extends React.Component {
         this.handlers.push({name, whenkey, dokey})
     }
 
-    unloadHandler(name){
+    unloadHandler(name) {
         const hn = this.handlers.entries().find(ele => ele[1].name == name)
         this.handlers = this.handlers.splice(hn[0], 1)
     }
@@ -184,7 +185,13 @@ class KeyNav extends React.Component {
      * @returns {*}
      */
     keyEnter(e, etn) {
+        etn = etn || e.target.tagName;
         if (etn == 'INPUT' || etn == 'SELECT' || etn == 'BUTTON') {
+
+            let b = this.keyMove(1, e, etn, e.target.type, e.keyCode);
+            if (!!b) {
+                this.context.updateData(b);
+            }
             return null
         }
         const p = this.props.immutableProps.toJS()

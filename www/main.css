@@ -1,36 +1,56 @@
 html {
-  font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 body {
-  font-size: 13px;
-  line-height: 20px;
+    font-size: 13px;
+    line-height: 20px;
 }
 
-.panel-red{
-  border: 1px solid red;
+.panel-red {
+    border: 1px solid red;
 }
 
-.dcs-list{
-  margin-bottom: 5px;
+.dcs-list {
+    margin-bottom: 5px;
 }
 
-.sel-active{
-  border: 2px dashed lightseagreen;
+.sel-active {
+    border: 2px dashed lightseagreen;
 }
 
-.f1-active{
-  background-color: #f9f9f9;
+.f1-active {
+    background-color: #f9f9f9;
 }
 
-#mainContainer{
-  overflow-y: auto;
-  padding-top: .5em;
-  padding-bottom: .5em;
+#mainContainer {
+    overflow-y: auto;
+    padding-top: .5em;
+    padding-bottom: .5em;
 }
+
 .panel {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
+
 .panel-body {
-  padding: 5px!important;
+    padding: 5px !important;
+}
+
+.autocompletediv {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 15px;
+    right: 0;
+    list-style: none;
+    max-height: 286px;
+    overflow: auto;
+    background-clip: padding-box;
+    width: 100%;
+}
+
+.ac-active {
+    background-color: #2aabd2;
+    color: white;
 }

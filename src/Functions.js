@@ -8,6 +8,7 @@ export function resizeWin() {
 export function stopEvent(e) {
     e.preventDefault()
     e.stopPropagation()
+    e.returnValue = false;
 }
 
 /**
@@ -58,3 +59,66 @@ export function getDataByEid(eid, dataList) {
     }
     return false
 }
+
+export function requestJson(api, cmd, callback, params, errorOp, timeout) {
+
+    timeout = timeout || C.REQUEST_TIMEOUT;
+    errorOp = errorOp || function (errMsg) {
+            console.error('request json occurred!', arguments);
+            alert('错误：' + errMsg);
+            debugger
+        };
+    let processFn = function (data) {
+
+        if (!data) {
+            errorOp.call(null, data);
+            return;
+        }
+        if (data.success === false) {
+            errorOp.call(null, data.msg);
+        } else {
+            callback.call(null, data);
+        }
+    };
+    $.ajax({
+        url: C.SERVER_URL + '/cki?api=' + api + '&cmd=' + cmd + "&_t=" + new Date().getTime(),
+        dataType: 'json',
+        crossDomain: true,
+        xhrFields: {
+            withCredentials: true
+        },
+        timeout: timeout,
+        type: 'post',
+        data: params,
+        byRequestJsonMethod: true,
+        success: processFn,
+        error: function (a) {
+            // console.error(arguments);
+            errorOp.call(null, a.statusText);
+        }
+    });
+}
+
+// export function initKeyboardEvent() {
+//
+//     let upFn = function () {
+//
+//     }
+//
+//     let downFn = function () {
+//
+//     }
+//
+//     $(document).delegate('body', 'keydown', function (e) {
+//
+//         let which = e.which;
+//
+//         console.log(e, which)
+//
+//         if (which == 37 || which == 38 || (which == 9 && e.shiftKey)) {//Up Left Shift+Tab
+//
+//         } else if (which == 39 || which == 40 || (which == 9 && !e.shiftKey)) {//Down Right Tab
+//
+//         }
+//     })
+// }
