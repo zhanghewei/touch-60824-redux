@@ -19,8 +19,8 @@ export default class AutoComplete extends React.Component {
 
     selectValue(value, e) {
 
-        if (typeof this.props.onItemClick === 'function') {
-            this.props.onItemClick(value);
+        if (typeof this.props['data-onItemClick'] === 'function') {
+            this.props['data-onItemClick'](value);
         }
 
         $(e.target).parents('ul').prev().focus();
@@ -67,8 +67,6 @@ export default class AutoComplete extends React.Component {
     }
 
     doOnKeyUp(e) {
-
-        console.log(e.which, e.target)
 
         let $target = $(e.target);
 

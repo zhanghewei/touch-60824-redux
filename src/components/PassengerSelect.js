@@ -17,11 +17,15 @@ class PassengerSelect extends React.Component {
         let activeIndex = [...selectList.entries()].find(ele => ele[1] == activeEid)[0]
         selectList.splice(activeIndex, 1)
         if (selectList.length < 1) {
-            document.getElementById(p.defaultActive).focus()
+            // document.getElementById(p.defaultActive).focus()
             updateData({
                 selectList,
                 block: p.defaultBlock,
+                activeEid: p.defaultActive,
+                page: C.DEFAULT_PAGE,
+                pageName: C.DEFAULT_PAGENAME
             })
+            document.getElementById(p.defaultActive).focus()
         } else {
             activeIndex--
             if (activeIndex < 0) {
@@ -40,7 +44,7 @@ class PassengerSelect extends React.Component {
         const handleFocus = this.context.handleFocus
         const a = C.BLOCK_SELECT == p.page ? ' f1-active' : ''
         return (
-            <div className="panel panel-default">
+            <div className="panel panel-default" style={{margin: '10px auto'}}>
                 <div className="panel-body">
                     <div className="col-xs-1"><span className="glyphicon glyphicon-user"></span>F1</div>
                     <div className={"col-xs-11" + a}>
@@ -52,7 +56,7 @@ class PassengerSelect extends React.Component {
                                     <span key={it}>
                                         <button id={it} className={b} onFocus={handleFocus}
                                                 onClick={this.handleClickSelect.bind(this)}>
-                                          <span className="glyphicon glyphicon-user">{dt[1].name}</span>
+                                          <span className="glyphicon glyphicon-user">{dt[1].cn || dt[1].en}</span>
                                         </button>
                                         <b> </b>
                                     </span>

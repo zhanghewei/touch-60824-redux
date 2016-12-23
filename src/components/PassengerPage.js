@@ -7,13 +7,24 @@ import PassengerList from './PassengerList'
 import PassengerEdit from './PassengerEdit'
 import PassengerSelect from './PassengerSelect'
 import PassengerOperator from './PassengerOperator'
+import CheckInPage from './CheckInPage'
 
 @pureRender
 class PassengerPage extends React.Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            cmd: ''
+        }
+    }
+
     renderOperator() {
         const pp = this.props.immutableProps.toJS()
         const p = {
             page: pp.page,
+            pageName: pp.pageName
         }
         const fetchPassengers = this.props.fetchPassengers
         return (
@@ -62,14 +73,64 @@ class PassengerPage extends React.Component {
      */
     renderEdit() {
         const pp = this.props.immutableProps.toJS()
+        // const c = this.context.immutableContext.toJS()
         if (pp.page == C.PAGE_EDIT) {
-            return (
-                <PassengerEdit immutableProps={{}}/>
-            )
+            switch (pp.pageName) {
+                case C.PAGE_CHECKIN :
+
+                    const canCheckinPassengers = []
+                    for (const id of pp.selectList) {
+                        const o = F.getDataByEid(id, pp.passengerData);
+                        const pl = o[1]
+                        if (pl.wci === false) {
+                            canCheckinPassengers.push(pl)
+                        }
+                    }
+                    const s = {
+                        canCheckinPassengers: canCheckinPassengers
+                    }
+                    return <CheckInPage immutableProps={Immutable.Map(s)}/>
+            }
+            throw 'page not found !!' + pp.pageName
+            // return (
+            //     <PassengerEdit immutableProps={{}}/>
+            // )
         }
     }
 
+    doOnKeyDown(e) {
+
+        const keyCode = e.which
+        const $t = $(e.target)
+        const newValue = $.trim($t.val())
+
+        if (keyCode == 13) {
+            // console.log(newValue, this.props.fetchPassengers)
+            this.props.fetchPassengers(newValue)
+            F.stopEvent(e);
+
+            if ($t.is(':text')) {
+                $t.select();
+            }
+        }
+    }
+
+    doOnCmdChange(e) {
+
+        this.setState(Object.assign({}, this.state, {
+            cmd: e.target.value.toLocaleUpperCase()
+        }))
+    }
+
+    componentWillMount() {
+        const p = this.props.immutableProps.toJS();
+        this.setState(Object.assign({}, this.state, {
+            cmd: p.cmd
+        }))
+    }
+
     render() {
+        const p = this.props.immutableProps.toJS();
         const c = this.context.immutableContext.toJS()
         const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
@@ -88,7 +149,9 @@ class PassengerPage extends React.Component {
                                     <input id="mainInput" key="mainInput"
                                            className={F.getSelClass(activeEid == C.DEFAULT_INPUT)}
                                            onFocus={ handleFocus } tabIndex="-1"
-                                           style={{marginLeft: 2}}/>
+                                           style={{marginLeft: 2}} value={this.state.cmd}
+                                           onKeyDown={this.doOnKeyDown.bind(this)}
+                                           onChange={this.doOnCmdChange.bind(this)}/>
                                     <span className="input-group-btn">
                                   <button className="btn btn-default" tabIndex="-1" style={{marginLeft: 3}}>
                                     Enter<span className="glyphicon glyphicon-menu-right"></span>

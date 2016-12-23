@@ -147,7 +147,7 @@ export  default class Login extends React.Component {
                                                       placeholder="输入航班号,如 9C8507"
                                                       value={this.state.fn}
                                                       onChange={this.txtOnChange.bind(this, 'fn')}
-                                                      onItemClick={this.doOnItemClick.bind(this, 'fn')}
+                                                      data-onItemClick={this.doOnItemClick.bind(this, 'fn')}
                                                       data-parsley-fn
                                                       data-parsley-fn-message="航班号格式错误！" required="true"
                                                       maxLength="10"/>
@@ -163,7 +163,7 @@ export  default class Login extends React.Component {
                                                       }).join(',').toLocaleUpperCase()}
                                                       value={this.state.fd}
                                                       onChange={this.txtOnChange.bind(this, 'fd')}
-                                                      onItemClick={this.doOnItemClick.bind(this, 'fd')}
+                                                      data-onItemClick={this.doOnItemClick.bind(this, 'fd')}
                                                       onFocus={this.onFdeFocus.bind(this, fds)}
                                                       name="fde"
                                                       placeholder="选择航班日期,如 03Apr"

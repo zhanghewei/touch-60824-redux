@@ -20,6 +20,9 @@ export const PREFIX = {
 export const SERVER_URL = 'http://127.0.0.1:2172/site';
 export const REQUEST_TIMEOUT = 30000;
 export const LOGIN_ON_OTHERSIDE = 0;
+export const DEFAULT_CMD = '/NA';
+export const DEFAULT_PAGENAME = 'passengerList'
+export const PAGE_CHECKIN = 'check-in'
 
 // // private methods
 // export const getDataByEid = Symbol('getDataById')

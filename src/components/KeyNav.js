@@ -59,7 +59,7 @@ class KeyNav extends React.Component {
         let b
         if (kc == 112) {
             // b = this.keyF1(e)
-        } else if (kc == 116) {
+        } else if (kc == 116 && !ckc) {
             b = this.keyF5(e)
         } else if (kc == 27) {
             b = this.keyEsc(e)
@@ -114,7 +114,12 @@ class KeyNav extends React.Component {
         if (p.block == C.BLOCK_OPERATOR) {
             return false
         }
-        document.getElementById(p.operatorList[0]).focus()
+        // document.getElementById(p.operatorList[0]).focus()
+        const ids = this.context.getValidList(C.BLOCK_OPERATOR);
+        if (ids && ids.length > 0) {
+            // $('#' + ids[0]).focus();
+            document.getElementById(ids[0]).focus()
+        }
         return false
     }
 
@@ -131,15 +136,15 @@ class KeyNav extends React.Component {
                 block: p.defaultBlock,
             }
         }
-        if (p.page != C.DEFAULT_PAGE) {
-            document.getElementById(C.DEFAULT_INPUT).focus()
-            return {
-                page: C.DEFAULT_PAGE,
-                defaultBlock: C.BLOCK_LIST,
-                defaultActive: C.DEFAULT_INPUT,
-                activeEid: C.DEFAULT_INPUT,
-            }
+        // if (p.page != C.DEFAULT_PAGE) {
+        document.getElementById(C.DEFAULT_INPUT).focus()
+        return {
+            page: C.DEFAULT_PAGE,
+            defaultBlock: C.BLOCK_LIST,
+            defaultActive: C.DEFAULT_INPUT,
+            activeEid: C.DEFAULT_INPUT,
         }
+        // }
     }
 
     /**
@@ -185,8 +190,12 @@ class KeyNav extends React.Component {
      * @returns {*}
      */
     keyEnter(e, etn) {
+        console.log(22)
         etn = etn || e.target.tagName;
-        if (etn == 'INPUT' || etn == 'SELECT' || etn == 'BUTTON') {
+        if (etn == 'BUTTON') {
+            return null;
+        }
+        if (etn == 'INPUT' || etn == 'SELECT') {
 
             let b = this.keyMove(1, e, etn, e.target.type, e.keyCode);
             if (!!b) {
@@ -242,7 +251,7 @@ class KeyNav extends React.Component {
         // console.log(activeEid)
         // todo
         this.context.setActiveEid(activeEid)
-        document.getElementById(activeEid).focus()
+        // document.getElementById(activeEid).focus()
     }
 
     render() {

@@ -60,15 +60,29 @@ export function getDataByEid(eid, dataList) {
     return false
 }
 
-export function requestJson(api, cmd, callback, params, errorOp, timeout) {
+/**
+ * 请求后台服务数据
+ * @param api   API
+ * @param cmd   CMD
+ * @param callback  成功的回调
+ * @param params    参数
+ * @param errorOp   失败的回调
+ * @param timeout   超时时间
+ * @param sync      是否同步
+ */
+export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) {
 
+    params = params || {};
+    Object.assign(params, {
+        version: '9.0.2',
+        isWorking: dcs().net && dcs().net.working ? true : false
+    })
     timeout = timeout || C.REQUEST_TIMEOUT;
     errorOp = errorOp || function (errMsg) {
             console.error('request json occurred!', arguments);
             alert('错误：' + errMsg);
-            debugger
         };
-    let processFn = function (data) {
+    const processFn = function (data) {
 
         if (!data) {
             errorOp.call(null, data);
@@ -77,10 +91,22 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout) {
         if (data.success === false) {
             errorOp.call(null, data.msg);
         } else {
+            // console.log(api, cmd, callback, data);
             callback.call(null, data);
         }
     };
-    $.ajax({
+    const token = dcs().token;
+    let reqParam;
+    if (token) {
+        reqParam = Object.assign({
+            flu: token.fl.uui,
+            counter: token.counter
+        }, params);
+    } else {
+        reqParam = params;
+    }
+
+    return $.ajax({
         url: C.SERVER_URL + '/cki?api=' + api + '&cmd=' + cmd + "&_t=" + new Date().getTime(),
         dataType: 'json',
         crossDomain: true,
@@ -89,7 +115,8 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout) {
         },
         timeout: timeout,
         type: 'post',
-        data: params,
+        data: reqParam,
+        async: !sync,
         byRequestJsonMethod: true,
         success: processFn,
         error: function (a) {
@@ -97,6 +124,14 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout) {
             errorOp.call(null, a.statusText);
         }
     });
+}
+
+export function dcs() {
+
+    if (!window.dcs) {
+        window.dcs = {};
+    }
+    return window.dcs;
 }
 
 // export function initKeyboardEvent() {

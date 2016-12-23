@@ -11,24 +11,34 @@ class PassengerList extends React.Component {
         const p = this.props.immutableProps.toJS()
         const c = this.context.immutableContext.toJS()
         // console.log(this.props.key)
-        const a = c.passengerData.map(
-            it => {
-                const b = C.PREFIX[C.BLOCK_LIST] + it.id
-                // 是否在选中区
-                const isSelection = p.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
-                    != null
-                return (
-                    <PassengerListItem key={b} isSelection={isSelection}
-                                       immutableProps={Immutable.Map(it)}/>
-                )
-            }
-        )
+        let a;
+        if (c.passengerData && c.passengerData.length > 0) {
+            a = c.passengerData.map(
+                it => {
+                    const b = C.PREFIX[C.BLOCK_LIST] + it.id
+                    // 是否在选中区
+                    const isSelection = p.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
+                        != null
+                    return (
+                        <PassengerListItem key={b} isSelection={isSelection}
+                                           immutableProps={Immutable.Map(it)}/>
+                    )
+                }
+            )
+        } else {
+            a = '未查询到任何旅客记录！'
+        }
+
         return (
             <div>
                 <br/>
                 <div className="row">
                     <div className="col-xs-12">
-                        <ul className="list-group">{a}</ul>
+                        {/*<ul className="list-group">{a}</ul>*/}
+                        <div style={{
+                            'overflowY': 'auto',
+                            'overflowX': 'hidden'
+                        }}>{a}</div>
                     </div>
                 </div>
             </div>
