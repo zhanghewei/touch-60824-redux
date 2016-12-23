@@ -34,9 +34,10 @@ class PassengerOperator extends React.Component {
 
     doRefresh() {
         const fetchPassengers = this.props.fetchPassengers
+        const c = this.props.immutableProps.toJS()
 
         if (typeof fetchPassengers === 'function') {
-            fetchPassengers();
+            fetchPassengers(c.cmd);
         }
     }
 
@@ -45,7 +46,7 @@ class PassengerOperator extends React.Component {
         this.context.updateData({
             page: C.PAGE_EDIT,
             pageName: C.PAGE_CHECKIN,
-            block: C.BLOCK_FORM
+            block: C.BLOCK_LIST
         })
     }
 

@@ -72,10 +72,10 @@ class Main extends React.Component {
     updateToken(token, net) {
 
         this.setState(Object.assign({}, this.state, {
-            token: token,
+            // token: token,
             net: net
         }))
-        F.dcs().token = token;
+        // F.dcs().token = token;
         F.dcs().net = net;
     }
 

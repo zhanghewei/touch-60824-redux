@@ -34,11 +34,13 @@ class Cki extends React.Component {
             activeEid: C.DEFAULT_INPUT,
             queryList: [C.DEFAULT_INPUT],
             selectList: [],
-            operatorList: ['ope_1', 'ope_2'],
-            editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2',
-                'edt_chk3',
-                'edt_sel1',
-                'edt_in3', 'edt_btn1'],
+            // operatorList: ['ope_1', 'ope_2'],
+            operatorList: [],
+            // editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2',
+            //     'edt_chk3',
+            //     'edt_sel1',
+            //     'edt_in3', 'edt_btn1'],
+            editList: [],
             cmd: C.DEFAULT_CMD,
             refreshData: null
         }
@@ -67,8 +69,15 @@ class Cki extends React.Component {
             getValidList: this.getValidList.bind(this),
             setActiveEid: this.setActiveEid.bind(this),
             setOperatorList: this.setOperatorList.bind(this),
-            setFormList: this.setFormList.bind(this)
+            setFormList: this.setFormList.bind(this),
+            setMainList: this.setMainList.bind(this)
         }
+    }
+
+    setMainList(mainList) {
+
+        mainList = mainList || []
+        this.s.queryList = [C.DEFAULT_INPUT, ...mainList]
     }
 
     setFormList(formFieldList) {
@@ -227,10 +236,12 @@ class Cki extends React.Component {
                 queryList,
                 passengerData,
                 page: C.PAGE_QUERY,
+                pageName: C.DEFAULT_PAGENAME,
                 block: C.BLOCK_LIST,
                 defaultBlock: C.BLOCK_LIST,
                 activeEid,
-                selectList: []
+                selectList: [],
+                cmd: cmd
             })
             $('#' + activeEid).focus();
         }).bind(this), {
@@ -272,6 +283,12 @@ class Cki extends React.Component {
         this.refreshRequest.abort();
     }
 
+    doOnCmdChange(e) {
+        this.updateData({
+            cmd: $.trim(e.target.value || '').toLocaleUpperCase()
+        })
+    }
+
     render() {
         const p = {
             page: this.s.page,
@@ -285,7 +302,8 @@ class Cki extends React.Component {
         return (
             <KeyNav immutableProps={Immutable.Map(this.s)}>
                 <PassengerPage immutableProps={Immutable.Map(p)}
-                               fetchPassengers={this.fetchPassengers.bind(this)}/>
+                               fetchPassengers={this.fetchPassengers.bind(this)}
+                               onCmdChange={this.doOnCmdChange.bind(this)}/>
             </KeyNav>
         )
     }
@@ -299,6 +317,7 @@ Cki.childContextTypes = {
     setActiveEid: React.PropTypes.func,
     setOperatorList: React.PropTypes.func,
     setFormList: React.PropTypes.func,
+    setMainList: React.PropTypes.func,
 }
 
 export default Cki

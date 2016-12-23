@@ -24,7 +24,8 @@ class PassengerPage extends React.Component {
         const pp = this.props.immutableProps.toJS()
         const p = {
             page: pp.page,
-            pageName: pp.pageName
+            pageName: pp.pageName,
+            cmd: pp.cmd
         }
         const fetchPassengers = this.props.fetchPassengers
         return (
@@ -89,7 +90,7 @@ class PassengerPage extends React.Component {
                     const s = {
                         canCheckinPassengers: canCheckinPassengers
                     }
-                    return <CheckInPage immutableProps={Immutable.Map(s)}/>
+                    return <CheckInPage immutableProps={Immutable.Map(s)} fetchPassengers={this.props.fetchPassengers}/>
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -115,15 +116,15 @@ class PassengerPage extends React.Component {
         }
     }
 
-    doOnCmdChange(e) {
+    // doOnCmdChange(e) {
+    //
+    //     this.setState(Object.assign({}, this.state, {
+    //         cmd: e.target.value.toLocaleUpperCase()
+    //     }))
+    // }
 
-        this.setState(Object.assign({}, this.state, {
-            cmd: e.target.value.toLocaleUpperCase()
-        }))
-    }
-
-    componentWillMount() {
-        const p = this.props.immutableProps.toJS();
+    componentWillReceiveProps(nextProps) {
+        const p = nextProps.immutableProps.toJS();
         this.setState(Object.assign({}, this.state, {
             cmd: p.cmd
         }))
@@ -151,7 +152,7 @@ class PassengerPage extends React.Component {
                                            onFocus={ handleFocus } tabIndex="-1"
                                            style={{marginLeft: 2}} value={this.state.cmd}
                                            onKeyDown={this.doOnKeyDown.bind(this)}
-                                           onChange={this.doOnCmdChange.bind(this)}/>
+                                           onChange={this.props.onCmdChange}/>
                                     <span className="input-group-btn">
                                   <button className="btn btn-default" tabIndex="-1" style={{marginLeft: 3}}>
                                     Enter<span className="glyphicon glyphicon-menu-right"></span>

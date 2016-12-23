@@ -7,7 +7,8 @@ export default class CheckInPage extends React.Component {
     constructor() {
         super();
 
-        this.inputId = C.PREFIX[C.BLOCK_FORM] + 'choose-seat'
+        this.inputId = C.PREFIX[C.BLOCK_LIST] + 'choose-seat'
+        this.btnId = C.PREFIX[C.BLOCK_LIST] + 'choose-seat-button'
 
         this.state = {
             seat: null
@@ -28,6 +29,35 @@ export default class CheckInPage extends React.Component {
         this.context.setActiveEid(this.inputId)
     }
 
+    doCheckin() {
+
+        const p = this.props.immutableProps.toJS()
+        const passengers = p.canCheckinPassengers || []
+
+        F.requestJson('checkIn', 'checkIn', function (data) {
+
+            if (data && data.length > 0) {
+                // this.context.updateData({
+                //     page: C.PAGE_QUERY,
+                //     pageName: C.DEFAULT_PAGENAME,
+                //     cmd: '/SID' + data.map((pl)=>pl.sid).join(',')
+                // })
+                this.props.fetchPassengers('/SID' + data.map((pl)=>pl.sid).join(','))
+            }
+        }.bind(this), {
+            sids: passengers.map((pl)=>pl.sid).join(','),
+            seats: this.state.seat
+        })
+    }
+
+    doOnKeyDown(e) {
+
+        if (e.which == 13) {
+            this.doCheckin();
+            F.stopEvent(e)
+        }
+    }
+
     render() {
 
         const immutableProps = this.props.immutableProps.toJS()
@@ -36,7 +66,7 @@ export default class CheckInPage extends React.Component {
         const fl = F.dcs().token.fl
         // const inputId = C.PREFIX[C.BLOCK_FORM] + 'choose-seat'
 
-        this.context.setFormList([this.inputId])
+        this.context.setMainList([this.inputId, this.btnId])
 
         const focus = c.activeEid == this.inputId
         const cc = focus ? 'form-control sel-active' : 'form-control '
@@ -61,10 +91,11 @@ export default class CheckInPage extends React.Component {
                                        value={this.state.value}
                                        onChange={this.doOnSeatChange.bind(this)}
                                        onFocus={this.context.handleFocus}
+                                       onKeyDown={this.doOnKeyDown.bind(this)}
                                        placeholder="如25A"/>
                                 <span className="input-group-btn">
-                                        <button id="saveBtn" type="button"
-                                                className="btn btn-default dcs-selectable">值机</button>
+                                        <button id={this.btnId} type="button" onClick={this.doCheckin.bind(this)}
+                                                className={F.getSelClass(c.activeEid == this.btnId, 'button')}>值机</button>
                                     </span>
                             </div>
                         </div>
@@ -134,6 +165,7 @@ export default class CheckInPage extends React.Component {
 CheckInPage.contextTypes = {
     immutableContext: React.PropTypes.any,
     setFormList: React.PropTypes.func,
+    setMainList: React.PropTypes.func,
     updateData: React.PropTypes.func,
     handleFocus: React.PropTypes.func,
     setActiveEid: React.PropTypes.func,

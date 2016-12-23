@@ -23,7 +23,7 @@ export function getSelClass(isActive, elType) {
         c = 'checkbox-inline'
     }
     if ('button' == elType) {
-        c = 'btn btn-xs btn-default'
+        c = 'btn btn-default'
     }
     if (isActive) {
         c += " sel-active"
@@ -96,16 +96,16 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) 
         }
     };
     const token = dcs().token;
-    let reqParam;
     if (token) {
-        reqParam = Object.assign({
+        params = Object.assign(params, {
             flu: token.fl.uui,
-            counter: token.counter
-        }, params);
-    } else {
-        reqParam = params;
+            counter: token.counter,
+            stc: token.stc,
+            bcf: token.bcf,
+            fu: token.fl.fu,
+            dap: token.dap
+        })
     }
-
     return $.ajax({
         url: C.SERVER_URL + '/cki?api=' + api + '&cmd=' + cmd + "&_t=" + new Date().getTime(),
         dataType: 'json',
@@ -115,7 +115,7 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) 
         },
         timeout: timeout,
         type: 'post',
-        data: reqParam,
+        data: params,
         async: !sync,
         byRequestJsonMethod: true,
         success: processFn,

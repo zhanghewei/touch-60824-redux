@@ -76,6 +76,7 @@ class KeyNav extends React.Component {
         }
         if (!!b) {
             this.context.updateData(b)
+            F.stopEvent(e)
         }
     }
 
@@ -136,13 +137,15 @@ class KeyNav extends React.Component {
                 block: p.defaultBlock,
             }
         }
+        const id = p.selectList && p.selectList.length > 0 ? p.selectList[0] : C.DEFAULT_INPUT
         // if (p.page != C.DEFAULT_PAGE) {
-        document.getElementById(C.DEFAULT_INPUT).focus()
+        document.getElementById(id).focus()
         return {
             page: C.DEFAULT_PAGE,
+            pageName: C.PAGE_QUERY,
             defaultBlock: C.BLOCK_LIST,
             defaultActive: C.DEFAULT_INPUT,
-            activeEid: C.DEFAULT_INPUT,
+            activeEid: id,
         }
         // }
     }
