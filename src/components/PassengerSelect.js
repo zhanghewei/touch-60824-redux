@@ -7,7 +7,6 @@ import * as F from '../Functions'
 @pureRender
 class PassengerSelect extends React.Component {
     handleClickSelect(e) {
-        F.stopEvent(e)
         const p = this.props.immutableProps.toJS()
         const c = this.context.immutableContext.toJS()
         const updateData = this.context.updateData
@@ -42,7 +41,8 @@ class PassengerSelect extends React.Component {
         const c = this.context.immutableContext.toJS()
         const activeEid = c.activeEid
         const handleFocus = this.context.handleFocus
-        const a = C.BLOCK_SELECT == p.page ? ' f1-active' : ''
+        const focus = C.BLOCK_SELECT == p.page
+        const a = focus ? ' f1-active' : ''
         return (
             <div className="panel panel-default" style={{margin: '10px auto'}}>
                 <div className="panel-body">
@@ -50,7 +50,7 @@ class PassengerSelect extends React.Component {
                     <div className={"col-xs-11" + a}>
                         {p.selectList.map(
                             it => {
-                                const b = "btn btn-xs btn-" + (activeEid == it ? 'danger' : 'default')
+                                const b = "btn btn-" + (activeEid == it ? 'danger' : 'default')
                                 const dt = F.getDataByEid(it, c.passengerData)
                                 return (
                                     <span key={it}>

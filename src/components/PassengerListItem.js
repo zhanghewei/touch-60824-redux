@@ -7,9 +7,20 @@ import * as F from '../Functions'
 @pureRender
 class PassengerListItem extends React.Component {
     doOnItemClick(e) {
-        const c = this.context;
+        const c = this.context.immutableContext.toJS()
+        const id = $(e.target).attr('id')
+        const isSelection = c.selectList.some((eid)=> {
+            const pl = F.getDataByEid(eid, c.passengerData)
+            return id == C.PREFIX[C.BLOCK_LIST] + pl[1].id
+        })
 
-        c.setActiveEid($(e.target).parents('a').attr('id'));
+        this.context.setActiveEid(id, isSelection);
+    }
+
+    doOnKeyDown(e) {
+        if (e.which == 13) {
+            this.props.onEnter();
+        }
     }
 
     render() {
@@ -37,7 +48,8 @@ class PassengerListItem extends React.Component {
         // )
         return (
             <div className={cc} style={{padding: '5px auto'}}>
-                <a href="javascript:void(0);" id={b} onFocus={handleFocus} onClick={this.doOnItemClick.bind(this)}>
+                <a href="javascript:void(0);" id={b} onFocus={handleFocus} onKeyDown={this.doOnKeyDown.bind(this)}
+                   onClick={this.doOnItemClick.bind(this)}>
                     <div className="row margin0">
                         <div className="col-xs-3">
                             <p>

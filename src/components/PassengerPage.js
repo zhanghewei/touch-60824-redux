@@ -29,7 +29,8 @@ class PassengerPage extends React.Component {
         }
         const fetchPassengers = this.props.fetchPassengers
         return (
-            <PassengerOperator immutableProps={Immutable.Map(p)} fetchPassengers={fetchPassengers}/>
+            <PassengerOperator immutableProps={Immutable.Map(p)} fetchPassengers={fetchPassengers}
+                               onCheckin={this.doCheckin.bind(this)}/>
         )
     }
 
@@ -44,7 +45,7 @@ class PassengerPage extends React.Component {
                 selectList: pp.selectList,
             }
             return (
-                <PassengerList immutableProps={Immutable.Map(p)}/>
+                <PassengerList immutableProps={Immutable.Map(p)} onCheckin={this.doCheckin.bind(this)}/>
             )
         }
     }
@@ -113,6 +114,23 @@ class PassengerPage extends React.Component {
             if ($t.is(':text')) {
                 $t.select();
             }
+        }
+    }
+
+    doCheckin() {
+
+        const c = this.context.immutableContext.toJS()
+        const canCheckin = c.selectList && c.selectList.some(function (id) {
+
+                const pl = F.getDataByEid(id, c.passengerData)[1]
+                return !pl.wci;
+            });
+        if(canCheckin) {
+            this.context.updateData({
+                page: C.PAGE_EDIT,
+                pageName: C.PAGE_CHECKIN,
+                block: C.BLOCK_LIST
+            })
         }
     }
 

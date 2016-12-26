@@ -41,14 +41,14 @@ class PassengerOperator extends React.Component {
         }
     }
 
-    doCheckin() {
-
-        this.context.updateData({
-            page: C.PAGE_EDIT,
-            pageName: C.PAGE_CHECKIN,
-            block: C.BLOCK_LIST
-        })
-    }
+    // doCheckin() {
+    //
+    //     this.context.updateData({
+    //         page: C.PAGE_EDIT,
+    //         pageName: C.PAGE_CHECKIN,
+    //         block: C.BLOCK_LIST
+    //     })
+    // }
 
     doCancelCheckin() {
 
@@ -100,7 +100,7 @@ class PassengerOperator extends React.Component {
                 return !pl.wci;
             });
         if (showCheckinBtn) {
-            btns.push(this.createBtn(idIndex++, '值机', this.doCheckin.bind(this)))
+            btns.push(this.createBtn(idIndex++, '值机', this.props.onCheckin))
         }
 
         //取消值机按钮

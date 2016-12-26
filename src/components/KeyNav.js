@@ -137,12 +137,19 @@ class KeyNav extends React.Component {
                 block: p.defaultBlock,
             }
         }
-        const id = p.selectList && p.selectList.length > 0 ? p.selectList[0] : C.DEFAULT_INPUT
+        let id;
+        if (p.page != C.PAGE_QUERY && p.selectList && p.selectList.length > 0) {
+            id = p.selectList[0]
+            const pl = F.getDataByEid(id, p.passengerData)
+            id = C.PREFIX[C.BLOCK_LIST] + pl[1].id
+        } else {
+            id = C.DEFAULT_INPUT
+        }
         // if (p.page != C.DEFAULT_PAGE) {
-        document.getElementById(id).focus()
+        // document.getElementById(id).focus()
         return {
-            page: C.DEFAULT_PAGE,
-            pageName: C.PAGE_QUERY,
+            page: C.PAGE_QUERY,
+            pageName: C.DEFAULT_PAGENAME,
             defaultBlock: C.BLOCK_LIST,
             defaultActive: C.DEFAULT_INPUT,
             activeEid: id,
@@ -193,7 +200,6 @@ class KeyNav extends React.Component {
      * @returns {*}
      */
     keyEnter(e, etn) {
-        console.log(22)
         etn = etn || e.target.tagName;
         if (etn == 'BUTTON') {
             return null;
@@ -206,18 +212,18 @@ class KeyNav extends React.Component {
             }
             return null
         }
-        const p = this.props.immutableProps.toJS()
-        if (p.block == C.BLOCK_LIST) {
-            // 值机
-            F.stopEvent(e)
-            return {
-                page: C.PAGE_EDIT,
-                block: C.BLOCK_FORM,
-                defaultBlock: C.BLOCK_FORM,
-                defaultActive: p.editList[0],
-                activeEid: p.editList[0],
-            }
-        }
+        // const p = this.props.immutableProps.toJS()
+        // if (p.block == C.BLOCK_LIST) {
+        //     // 值机
+        //     F.stopEvent(e)
+        //     return {
+        //         page: C.PAGE_EDIT,
+        //         block: C.BLOCK_FORM,
+        //         defaultBlock: C.BLOCK_FORM,
+        //         defaultActive: p.editList[0],
+        //         activeEid: p.editList[0],
+        //     }
+        // }
     }
 
     /**
@@ -229,6 +235,7 @@ class KeyNav extends React.Component {
      * @param kc
      */
     keyMove(step, e, etn, ett, kc) {
+        F.stopEvent(e)
         if ((kc == 37 || kc == 39) && etn == 'INPUT' && ett == 'text') {
             return
         }
@@ -237,7 +244,7 @@ class KeyNav extends React.Component {
         if (validList.length < 2) {
             return
         }
-        F.stopEvent(e)
+
         const c = this.context.immutableContext.toJS()
         let activeEid = c.activeEid
         let activeIndex = [...validList.entries()].find(ele => ele[1] == activeEid)[0]
@@ -254,6 +261,7 @@ class KeyNav extends React.Component {
         // console.log(activeEid)
         // todo
         this.context.setActiveEid(activeEid)
+
         // document.getElementById(activeEid).focus()
     }
 

@@ -103,7 +103,10 @@ class Cki extends React.Component {
         }
         const immutableState = this.state.immutableState.merge(data)
         this.s = immutableState.toJS()
-        this.setState({immutableState})
+        this.setState({immutableState}, function () {
+            const $t = $('#' + this.s.activeEid)
+            $t.focus()
+        })
     }
 
     /**
@@ -137,7 +140,7 @@ class Cki extends React.Component {
         return []
     }
 
-    setActiveEid(active) {
+    setActiveEid(active, cancel) {
 
         const tma = {}
         for (const k of Object.keys(C.PREFIX)) {
@@ -152,7 +155,7 @@ class Cki extends React.Component {
         tma.activeEid = active
         this.updateData(tma)
 
-        document.getElementById(active).focus()
+        // document.getElementById(active).focus()
     }
 
     /**
@@ -170,11 +173,6 @@ class Cki extends React.Component {
             return
         }
         this.setActiveEid(id)
-
-        const $t = $(e.target)
-        if ($t.is(':text')) {
-            $t.select();
-        }
     }
 
     static formatData(data) {

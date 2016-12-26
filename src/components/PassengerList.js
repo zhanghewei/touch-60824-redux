@@ -21,7 +21,7 @@ class PassengerList extends React.Component {
                         != null
                     return (
                         <PassengerListItem key={b} isSelection={isSelection}
-                                           immutableProps={Immutable.Map(it)}/>
+                                           immutableProps={Immutable.Map(it)} onEnter={this.props.onCheckin}/>
                     )
                 }
             )
