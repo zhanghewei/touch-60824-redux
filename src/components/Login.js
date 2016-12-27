@@ -31,7 +31,7 @@ export  default class Login extends React.Component {
         let _me = this;
         if (this.state.wid && this.state.pwd && this.state.tos && this.state.flights.length == 0) {
 
-            F.requestJson('queryUser', 'selectFns', function (data) {
+            this.context.request('queryUser', 'selectFns', function (data) {
 
                 _me.setState(Object.assign({}, _me.state, {
                     flights: data
@@ -95,7 +95,7 @@ export  default class Login extends React.Component {
                 <div className="row">
                     <div className="col-xs-6 col-xs-offset-3">
                         <form id="loginForm" className="form-horizontal dcs-selectable-container"
-                              noValidate="noValidate" >
+                              noValidate="noValidate">
                             <div id="userLogin">
                                 <div className="form-group">
                                     <label className="col-xs-4 control-label">机场三字码</label>
@@ -187,4 +187,8 @@ export  default class Login extends React.Component {
             </div>
         )
     }
+}
+
+Login.contextTypes = {
+    request: React.PropTypes.func
 }
