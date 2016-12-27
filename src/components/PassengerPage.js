@@ -8,6 +8,7 @@ import PassengerEdit from './PassengerEdit'
 import PassengerSelect from './PassengerSelect'
 import PassengerOperator from './PassengerOperator'
 import CheckInPage from './CheckInPage'
+import FlightStatusManage from './FlightStatusManage'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -78,7 +79,7 @@ class PassengerPage extends React.Component {
         // const c = this.context.immutableContext.toJS()
         if (pp.page == C.PAGE_EDIT) {
             switch (pp.pageName) {
-                case C.PAGE_CHECKIN :
+                case C.PAGE_CHECKIN ://值机页面
 
                     const canCheckinPassengers = []
                     for (const id of pp.selectList) {
@@ -92,6 +93,12 @@ class PassengerPage extends React.Component {
                         canCheckinPassengers: canCheckinPassengers
                     }
                     return <CheckInPage immutableProps={Immutable.Map(s)} fetchPassengers={this.props.fetchPassengers}/>
+
+                case C.PAGE_FLIGHT_STATUS_MANAGE://航班状态管理页面
+
+                    const g = this.context.globalContext.toJS()
+                    const fl = g.token.fl
+                    return <FlightStatusManage fl={fl}/>
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -125,7 +132,7 @@ class PassengerPage extends React.Component {
                 const pl = F.getDataByEid(id, c.passengerData)[1]
                 return !pl.wci;
             });
-        if(canCheckin) {
+        if (canCheckin) {
             this.context.updateData({
                 page: C.PAGE_EDIT,
                 pageName: C.PAGE_CHECKIN,
@@ -235,6 +242,7 @@ PassengerPage.propTypes = {
 }
 PassengerPage.contextTypes = {
     immutableContext: React.PropTypes.any,
+    globalContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
     updateData: React.PropTypes.func,
 }

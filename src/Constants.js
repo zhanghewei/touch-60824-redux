@@ -22,7 +22,8 @@ export const REQUEST_TIMEOUT = 30000;
 export const LOGIN_ON_OTHERSIDE = 0;
 export const DEFAULT_CMD = '/NA';
 export const DEFAULT_PAGENAME = 'passengerList'
-export const PAGE_CHECKIN = 'check-in'
+export const PAGE_CHECKIN = 'PAGE_CHECKIN'
+export const PAGE_FLIGHT_STATUS_MANAGE = 'PAGE_FLIGHT_STATUS_MANAGE'
 
 // // private methods
 // export const getDataByEid = Symbol('getDataById')

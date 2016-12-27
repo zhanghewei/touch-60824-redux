@@ -34,14 +34,9 @@ export default class CheckInPage extends React.Component {
         const p = this.props.immutableProps.toJS()
         const passengers = p.canCheckinPassengers || []
 
-        F.requestJson('checkIn', 'checkIn', function (data) {
+        this.context.request('checkIn', 'checkIn', function (data) {
 
             if (data && data.length > 0) {
-                // this.context.updateData({
-                //     page: C.PAGE_QUERY,
-                //     pageName: C.DEFAULT_PAGENAME,
-                //     cmd: '/SID' + data.map((pl)=>pl.sid).join(',')
-                // })
                 this.props.fetchPassengers('/SID' + data.map((pl)=>pl.sid).join(','))
             }
         }.bind(this), {
@@ -62,8 +57,9 @@ export default class CheckInPage extends React.Component {
 
         const immutableProps = this.props.immutableProps.toJS()
         const c = this.context.immutableContext.toJS()
+        const g = this.context.globalContext.toJS()
         const passengers = immutableProps.canCheckinPassengers || []
-        const fl = F.dcs().token.fl
+        const fl = g.token.fl
         // const inputId = C.PREFIX[C.BLOCK_FORM] + 'choose-seat'
 
         this.context.setMainList([this.inputId, this.btnId])
@@ -164,9 +160,11 @@ export default class CheckInPage extends React.Component {
 
 CheckInPage.contextTypes = {
     immutableContext: React.PropTypes.any,
+    globalContext: React.PropTypes.any,
     setFormList: React.PropTypes.func,
     setMainList: React.PropTypes.func,
     updateData: React.PropTypes.func,
     handleFocus: React.PropTypes.func,
     setActiveEid: React.PropTypes.func,
+    request: React.PropTypes.func,
 }

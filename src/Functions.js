@@ -8,7 +8,6 @@ export function resizeWin() {
 export function stopEvent(e) {
     e.preventDefault()
     e.stopPropagation()
-    e.returnValue = false;
 }
 
 /**
@@ -62,6 +61,7 @@ export function getDataByEid(eid, dataList) {
 
 /**
  * 请求后台服务数据
+ * @param g 请求附加的全局参数
  * @param api   API
  * @param cmd   CMD
  * @param callback  成功的回调
@@ -70,12 +70,12 @@ export function getDataByEid(eid, dataList) {
  * @param timeout   超时时间
  * @param sync      是否同步
  */
-export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) {
+export function requestJson(g, api, cmd, callback, params, errorOp, timeout, sync) {
 
     params = params || {};
     Object.assign(params, {
         version: '9.0.2',
-        isWorking: dcs().net && dcs().net.working ? true : false
+        isWorking: g.net && g.net.working ? true : false
     })
     timeout = timeout || C.REQUEST_TIMEOUT;
     errorOp = errorOp || function (errMsg) {
@@ -95,7 +95,7 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) 
             callback.call(null, data);
         }
     };
-    const token = dcs().token;
+    const token = g.token;
     if (token) {
         params = Object.assign(params, {
             flu: token.fl.uui,
@@ -126,12 +126,9 @@ export function requestJson(api, cmd, callback, params, errorOp, timeout, sync) 
     });
 }
 
-export function dcs() {
+export function isCKI(loginMode) {
 
-    if (!window.dcs) {
-        window.dcs = {};
-    }
-    return window.dcs;
+    return loginMode == 'cki'
 }
 
 // export function initKeyboardEvent() {

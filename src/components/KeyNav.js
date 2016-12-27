@@ -16,8 +16,6 @@ class KeyNav extends React.Component {
          * @type {Array}
          */
         this.handlers = []
-        this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1.bind(this))
-        this.loadHandler('keyEnter', (e) => e.keyCode == 13, this.keyEnter.bind(this))
     }
 
     /**
@@ -265,6 +263,17 @@ class KeyNav extends React.Component {
         // document.getElementById(activeEid).focus()
     }
 
+    flightStatusManage() {
+
+        const updateData = this.context.updateData
+
+        updateData({
+            page: C.PAGE_EDIT,
+            pageName: C.PAGE_FLIGHT_STATUS_MANAGE,
+            block: C.BLOCK_LIST
+        })
+    }
+
     render() {
         return (
             <div>{this.props.children}</div>
@@ -272,6 +281,15 @@ class KeyNav extends React.Component {
     }
 
     componentWillMount() {
+
+        const p = this.props.immutableProps.toJS();
+        const isCki = F.isCKI(p.loginMode)
+
+        this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1.bind(this))
+        this.loadHandler('keyEnter', (e) => e.keyCode == 13, this.keyEnter.bind(this))
+        this.loadHandler('keyAltM', (e) => e.keyCode == 77 && e.altKey && isCki, this.flightStatusManage.bind(this))
+
+
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))
         // this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1)
     }

@@ -23,7 +23,6 @@ class Cki extends React.Component {
     constructor() {
         super()
 
-        // console.log(C.DEFAULT_INPUT1)
         this.s = {
             passengerData: [],
             page: C.PAGE_QUERY,
@@ -34,12 +33,7 @@ class Cki extends React.Component {
             activeEid: C.DEFAULT_INPUT,
             queryList: [C.DEFAULT_INPUT],
             selectList: [],
-            // operatorList: ['ope_1', 'ope_2'],
             operatorList: [],
-            // editList: ['edt_in1', 'edt_in2', 'edt_chk1', 'edt_chk2',
-            //     'edt_chk3',
-            //     'edt_sel1',
-            //     'edt_in3', 'edt_btn1'],
             editList: [],
             cmd: C.DEFAULT_CMD,
             refreshData: null
@@ -87,9 +81,6 @@ class Cki extends React.Component {
 
     setOperatorList(operatorList) {
 
-        // this.updateData({
-        //     operatorList
-        // })
         this.s.operatorList = operatorList;
     }
 
@@ -114,17 +105,6 @@ class Cki extends React.Component {
      * @returns {Array}
      */
     getValidList(block) {
-        // switch (this.s.block) {
-        //     case C.BLOCK_LIST:
-        //         return this.s.queryList
-        //     case C.BLOCK_FORM:
-        //         return this.s.editList
-        //     case C.BLOCK_SELECT:
-        //         return this.s.selectList
-        //     case C.BLOCK_OPERATOR:
-        //         return this.s.operatorList
-        // }
-        // return []
 
         const b = block || this.s.block
         switch (b) {
@@ -154,8 +134,6 @@ class Cki extends React.Component {
         tma.block = tma.block || this.s.defaultBlock
         tma.activeEid = active
         this.updateData(tma)
-
-        // document.getElementById(active).focus()
     }
 
     /**
@@ -164,8 +142,6 @@ class Cki extends React.Component {
      */
     handleFocus(e) {
 
-        // console.log(e,e.target,e.target.id);
-        // F.stopEvent(e)
         let a = this.s.activeEid
         let id = e.target.id
         // avoid dead loop
@@ -203,24 +179,8 @@ class Cki extends React.Component {
     }
 
     fetchPassengers(cmd) {
-        // console.log("call fetch pas")
-        // $.getJSON("passenger.json", (passengerData => {
-        //     // console.log(`fetch data ${data.length}`)
-        //     const queryList = [C.DEFAULT_INPUT]
-        //     passengerData.map(ele => {
-        //         queryList.push(C.PREFIX[C.BLOCK_LIST] + ele.id)
-        //     })
-        //     this.updateData({
-        //         queryList,
-        //         passengerData,
-        //         page: C.PAGE_QUERY,
-        //         block: C.BLOCK_LIST,
-        //         defaultBlock: C.BLOCK_LIST,
-        //         activeEid: C.DEFAULT_INPUT,
-        //     })
-        // }).bind(this))
         cmd = cmd || this.state.cmd || '/NA';
-        F.requestJson('queryPassenger', cmd, (function (passengerData) {
+        this.context.request('queryPassenger', cmd, (function (passengerData) {
 
             passengerData = Cki.formatData(passengerData);
 
@@ -256,7 +216,7 @@ class Cki extends React.Component {
         F.resizeWin()
         // document.getElementById(this.s.activeEid).focus()
         const fn = (()=> {
-            this.refreshRequest = F.requestJson('refresh', 'netLatency', function (data) {
+            this.refreshRequest = this.context.request('refresh', 'netLatency', function (data) {
                 if (data) {
                     this.updateData({
                         refreshData: data
@@ -295,8 +255,9 @@ class Cki extends React.Component {
             defaultActive: this.s.defaultActive,
             passengerData: this.s.passengerData,
             selectList: this.s.selectList,
-            cmd: this.s.cmd,
+            cmd: this.s.cmd
         }
+        this.s.loginMode = this.props.loginMode
         return (
             <KeyNav immutableProps={Immutable.Map(this.s)}>
                 <PassengerPage immutableProps={Immutable.Map(p)}
@@ -316,6 +277,10 @@ Cki.childContextTypes = {
     setOperatorList: React.PropTypes.func,
     setFormList: React.PropTypes.func,
     setMainList: React.PropTypes.func,
+}
+
+Cki.contextTypes = {
+    request: React.PropTypes.func
 }
 
 export default Cki
