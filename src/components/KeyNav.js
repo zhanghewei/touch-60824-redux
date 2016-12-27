@@ -259,8 +259,6 @@ class KeyNav extends React.Component {
         // console.log(activeEid)
         // todo
         this.context.setActiveEid(activeEid)
-
-        // document.getElementById(activeEid).focus()
     }
 
     flightStatusManage() {
@@ -270,6 +268,26 @@ class KeyNav extends React.Component {
         updateData({
             page: C.PAGE_EDIT,
             pageName: C.PAGE_FLIGHT_STATUS_MANAGE,
+            block: C.BLOCK_LIST
+        })
+    }
+
+    openFlightSeat() {
+        const updateData = this.context.updateData
+
+        updateData({
+            page: C.PAGE_EDIT,
+            pageName: C.PAGE_OPEN_FLIGHT_SEAT,
+            block: C.BLOCK_LIST
+        })
+    }
+
+    setFlightSeat() {
+        const updateData = this.context.updateData
+
+        updateData({
+            page: C.PAGE_EDIT,
+            pageName: C.PAGE_SET_FLIGHT_SEAT,
             block: C.BLOCK_LIST
         })
     }
@@ -288,6 +306,8 @@ class KeyNav extends React.Component {
         this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1.bind(this))
         this.loadHandler('keyEnter', (e) => e.keyCode == 13, this.keyEnter.bind(this))
         this.loadHandler('keyAltM', (e) => e.keyCode == 77 && e.altKey && isCki, this.flightStatusManage.bind(this))
+        this.loadHandler('keyAltI', (e) => e.keyCode == 73 && e.altKey && isCki, this.openFlightSeat.bind(this))
+        this.loadHandler('keyAltL', (e) => e.keyCode == 76 && e.altKey && isCki, this.setFlightSeat.bind(this))
 
 
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))

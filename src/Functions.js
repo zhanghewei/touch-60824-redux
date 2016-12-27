@@ -131,6 +131,21 @@ export function isCKI(loginMode) {
     return loginMode == 'cki'
 }
 
+export function serializeForm(form) {
+
+    const ips = $('input', form),
+        p = {}
+
+    if (ips.length > 0) {
+        ips.each((i, ip)=> {
+            const $ip = $(ip)
+            p[$ip.attr('name')] = $.trim($ip.val())
+        })
+    }
+
+    return p;
+}
+
 // export function initKeyboardEvent() {
 //
 //     let upFn = function () {

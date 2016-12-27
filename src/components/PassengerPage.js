@@ -9,6 +9,7 @@ import PassengerSelect from './PassengerSelect'
 import PassengerOperator from './PassengerOperator'
 import CheckInPage from './CheckInPage'
 import FlightStatusManage from './FlightStatusManage'
+import SeatSetting from './SeatSetting'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -99,6 +100,15 @@ class PassengerPage extends React.Component {
                     const g = this.context.globalContext.toJS()
                     const fl = g.token.fl
                     return <FlightStatusManage fl={fl}/>
+
+                case C.PAGE_OPEN_FLIGHT_SEAT://开放座位
+
+                    return <SeatSetting tag="*"/>
+
+                case C.PAGE_SET_FLIGHT_SEAT://设置座位
+
+                    return <SeatSetting />
+
             }
             throw 'page not found !!' + pp.pageName
             // return (

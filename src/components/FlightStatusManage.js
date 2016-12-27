@@ -64,6 +64,8 @@ export default class FlightStatusManage extends React.Component {
 
                 const btn = $(':button:contains("(' + charCode + ')")')
                 btn.click();
+
+                F.stopEvent(e)
             }
         }
 
