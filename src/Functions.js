@@ -146,6 +146,33 @@ export function serializeForm(form) {
     return p;
 }
 
+export function formatData(data) {
+
+    if (!data || !(data instanceof Array)) return data;
+    return data.map(function (r) {
+        let isCheckin = "NA";
+        for (let k in r) {
+            let v = r[k];
+            if (k !== 'uui') {
+                r[k] = v && typeof v === 'string' ? v.toLocaleUpperCase() : v;
+            }
+        }
+        if (r.wci) {
+            isCheckin = "AC";
+        }
+        r.isCheckin = isCheckin;
+        if (r.wcfs) {//座位冲突旅客突出显示
+            r.style = 1;
+        } else {
+            r.style = 0;
+        }
+        if (r.osc != null) {
+            r.ak = r.osc.indexOf("BAGPRICE") > 0 ? r.osc.substring(10, r.osc.indexOf("CNY")) : "0";
+        }
+        return r;
+    })
+}
+
 // export function initKeyboardEvent() {
 //
 //     let upFn = function () {

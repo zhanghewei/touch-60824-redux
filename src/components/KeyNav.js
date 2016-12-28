@@ -347,9 +347,9 @@ class KeyNav extends React.Component {
         window.removeEventListener('keydown', this.handleWinKeydown)
     }
 }
-// KeyNav.propTypes = {
-//     immutableProps: React.PropTypes.any.isRequired,
-// }
+KeyNav.propTypes = {
+    immutableProps: React.PropTypes.any.isRequired,
+}
 KeyNav.contextTypes = {
     immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,

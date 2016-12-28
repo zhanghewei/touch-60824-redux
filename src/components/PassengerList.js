@@ -17,7 +17,7 @@ class PassengerList extends React.Component {
                 it => {
                     const b = C.PREFIX[C.BLOCK_LIST] + it.id
                     // 是否在选中区
-                    const isSelection = p.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
+                    const isSelection = c.selectList.find(ele => ele == C.PREFIX[C.BLOCK_SELECT] + it.id)
                         != null
                     return (
                         <PassengerListItem key={b} isSelection={isSelection}

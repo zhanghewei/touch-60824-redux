@@ -139,8 +139,7 @@ class Cki extends React.Component {
         return []
     }
 
-    setActiveEid(active, cancel) {
-
+    setActiveEid(active) {
         const tma = {}
         for (const k of Object.keys(C.PREFIX)) {
             const v = C.PREFIX[k]
@@ -170,38 +169,11 @@ class Cki extends React.Component {
         this.setActiveEid(id)
     }
 
-    static formatData(data) {
-
-        if (!data || !(data instanceof Array)) return data;
-        return data.map(function (r) {
-            let isCheckin = "NA";
-            for (let k in r) {
-                let v = r[k];
-                if (k !== 'uui') {
-                    r[k] = v && typeof v === 'string' ? v.toLocaleUpperCase() : v;
-                }
-            }
-            if (r.wci) {
-                isCheckin = "AC";
-            }
-            r.isCheckin = isCheckin;
-            if (r.wcfs) {//座位冲突旅客突出显示
-                r.style = 1;
-            } else {
-                r.style = 0;
-            }
-            if (r.osc != null) {
-                r.ak = r.osc.indexOf("BAGPRICE") > 0 ? r.osc.substring(10, r.osc.indexOf("CNY")) : "0";
-            }
-            return r;
-        })
-    }
-
     fetchPassengers(cmd) {
         cmd = cmd || this.state.cmd || '/NA';
         this.context.request('queryPassenger', cmd, (function (passengerData) {
 
-            passengerData = Cki.formatData(passengerData);
+            passengerData = F.formatData(passengerData);
 
             const queryList = [C.DEFAULT_INPUT]
             passengerData.map(ele => {
@@ -278,7 +250,8 @@ class Cki extends React.Component {
         }
         this.s.loginMode = this.props.loginMode
         return (
-            <KeyNav immutableProps={Immutable.Map(this.s)} fetchPassengers={this.fetchPassengers.bind(this)} cancelCheckin={this.cancelCheckin.bind(this)}>
+            <KeyNav immutableProps={Immutable.Map(this.s)} fetchPassengers={this.fetchPassengers.bind(this)}
+                    cancelCheckin={this.cancelCheckin.bind(this)}>
                 <PassengerPage immutableProps={Immutable.Map(p)}
                                fetchPassengers={this.fetchPassengers.bind(this)}
                                onCmdChange={this.doOnCmdChange.bind(this)}

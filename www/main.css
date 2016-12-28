@@ -639,3 +639,7 @@ hr {
 button,a{
     outline-width: 0 !important;
 }
+
+#flightStatusPanel label{
+    margin: 0px 2px;
+}

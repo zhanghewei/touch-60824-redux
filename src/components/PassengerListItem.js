@@ -8,13 +8,25 @@ import * as F from '../Functions'
 class PassengerListItem extends React.Component {
     doOnItemClick(e) {
         const c = this.context.immutableContext.toJS()
-        const id = $(e.target).attr('id')
+        const id = $(e.target).parents('a').attr('id')
         const isSelection = c.selectList.some((eid)=> {
             const pl = F.getDataByEid(eid, c.passengerData)
             return id == C.PREFIX[C.BLOCK_LIST] + pl[1].id
         })
 
-        this.context.setActiveEid(id, isSelection);
+        this.context.setActiveEid(id);
+
+        // let sl;
+        //
+        // if (isSelection) {
+        //     sl = c.selectList.filter((eid)=>eid != id)
+        // } else {
+        //     sl = Array.from(c.selectList)
+        //     sl.push(id)
+        // }
+        // this.context.updateData({
+        //     selectList: sl
+        // })
     }
 
     doOnKeyDown(e) {
@@ -35,6 +47,8 @@ class PassengerListItem extends React.Component {
         if (isActive) {
             cc += " sel-active"
         }
+
+        // const isSelection = c.selectList.some(eid=>eid == b)
         if (this.props.isSelection) {
             cc += " active"
         }
@@ -155,6 +169,7 @@ PassengerListItem.propTypes = {
 PassengerListItem.contextTypes = {
     immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,
-    setActiveEid: React.PropTypes.func
+    setActiveEid: React.PropTypes.func,
+    updateData: React.PropTypes.func,
 }
 export default PassengerListItem

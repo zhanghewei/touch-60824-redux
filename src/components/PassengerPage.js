@@ -11,6 +11,7 @@ import CheckInPage from './CheckInPage'
 import FlightStatusManage from './FlightStatusManage'
 import SeatSetting from './SeatSetting'
 import ShowSeat from './ShowSeat'
+import FlightStatusPanel from './FlightStatusPanel'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -197,6 +198,12 @@ class PassengerPage extends React.Component {
                     </div>
                 </nav>
                 <div id="mainContainer" className="container-fluid">
+                    <div className="panel panel-default" style={{marginTop: '5px', paddingRight: '10px'}}>
+                        <div className="panel-body" style={{padding: 0}}>
+                            <FlightStatusPanel />
+                        </div>
+                    </div>
+
                     {this.renderSelect()}
                     {this.renderOperator()}
                     {this.renderQuery()}
@@ -244,10 +251,10 @@ class PassengerPage extends React.Component {
         )
     }
 }
-// PassengerPage.propTypes = {
-//     immutableProps: React.PropTypes.any.isRequired,
-//     fetchPassengers: React.PropTypes.func.isRequired,
-// }
+PassengerPage.propTypes = {
+    immutableProps: React.PropTypes.any.isRequired,
+    fetchPassengers: React.PropTypes.func.isRequired,
+}
 PassengerPage.contextTypes = {
     immutableContext: React.PropTypes.any,
     globalContext: React.PropTypes.any,
