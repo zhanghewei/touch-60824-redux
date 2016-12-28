@@ -84,6 +84,9 @@ export default class FlightStatusManage extends React.Component {
         const fs = fl.fs
         const gs = fl.gs
 
+        const c = this.context.immutableContext.toJS()
+        const sexModal = c.refreshData[fl.uui].passengerStatus
+
         this.idIndex = 1;
 
         const o = <div className="modal-body">
@@ -145,7 +148,9 @@ export default class FlightStatusManage extends React.Component {
                         </div>
                     </div>
                 </div>
-                <PassengerSexStatistics />
+                <div className="col-xs-4">
+                    <PassengerSexStatistics modal={sexModal}/>
+                </div>
             </div>
         </div>
 

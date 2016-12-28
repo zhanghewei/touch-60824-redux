@@ -26,6 +26,7 @@ export const PAGE_CHECKIN = 'PAGE_CHECKIN'
 export const PAGE_FLIGHT_STATUS_MANAGE = 'PAGE_FLIGHT_STATUS_MANAGE'
 export const PAGE_OPEN_FLIGHT_SEAT = 'PAGE_OPEN_FLIGHT_SEAT'
 export const PAGE_SET_FLIGHT_SEAT = 'PAGE_SET_FLIGHT_SEAT'
+export const PAGE_SHOW_FLIGHT_SEAT = 'PAGE_SHOW_FLIGHT_SEAT'
 
 // // private methods
 // export const getDataByEid = Symbol('getDataById')

@@ -10,6 +10,7 @@ import PassengerOperator from './PassengerOperator'
 import CheckInPage from './CheckInPage'
 import FlightStatusManage from './FlightStatusManage'
 import SeatSetting from './SeatSetting'
+import ShowSeat from './ShowSeat'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -108,6 +109,10 @@ class PassengerPage extends React.Component {
                 case C.PAGE_SET_FLIGHT_SEAT://设置座位
 
                     return <SeatSetting />
+
+                case C.PAGE_SHOW_FLIGHT_SEAT:
+
+                    return <ShowSeat />
 
             }
             throw 'page not found !!' + pp.pageName

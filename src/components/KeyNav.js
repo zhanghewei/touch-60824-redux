@@ -292,6 +292,19 @@ class KeyNav extends React.Component {
         })
     }
 
+    showFlightSeat(e) {
+        const updateData = this.context.updateData
+
+        updateData({
+            page: C.PAGE_EDIT,
+            pageName: C.PAGE_SHOW_FLIGHT_SEAT,
+            block: C.BLOCK_LIST,
+            activeEid: C.DEFAULT_INPUT
+        })
+
+        F.stopEvent(e)
+    }
+
     render() {
         return (
             <div>{this.props.children}</div>
@@ -308,6 +321,7 @@ class KeyNav extends React.Component {
         this.loadHandler('keyAltM', (e) => e.keyCode == 77 && e.altKey && isCki, this.flightStatusManage.bind(this))
         this.loadHandler('keyAltI', (e) => e.keyCode == 73 && e.altKey && isCki, this.openFlightSeat.bind(this))
         this.loadHandler('keyAltL', (e) => e.keyCode == 76 && e.altKey && isCki, this.setFlightSeat.bind(this))
+        this.loadHandler('keyAltD', (e) => e.keyCode == 68 && e.altKey && isCki, this.showFlightSeat.bind(this))
 
 
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))

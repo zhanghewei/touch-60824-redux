@@ -6,33 +6,13 @@ import React from 'react'
 export default class PassengerSexStatistics extends React.Component {
     constructor() {
         super()
-
-        this.state = {}
     }
-
-    componentWillMount() {
-
-        this.request = this.context.request('count', 'queryPassengerStatus', function (data) {
-
-            if (data) {
-                this.setState(Object.assign({}, this.state, data))
-            }
-        }.bind(this))
-    }
-
-    componentWillUnmount() {
-
-        if (this.request) {
-            this.request.abort()
-        }
-    }
-
 
     render() {
 
-        const s = this.state
+        const s = this.props.modal
 
-        return <div id="passengerStatusChightDiv" className="col-xs-4 passenger-status-wrapper">
+        return <div id="passengerStatusChightDiv" className=" passenger-status-wrapper">
             <div id="passengerStatusPanel" className="panel panel-default">
                 <div id="passengerStatusDiv" className="panel-body panel_padding_s">
                     <div id="passengerStatus" className="table-responsive">
@@ -77,8 +57,4 @@ export default class PassengerSexStatistics extends React.Component {
             </div>
         </div>
     }
-}
-
-PassengerSexStatistics.contextTypes = {
-    request: React.PropTypes.func
 }
