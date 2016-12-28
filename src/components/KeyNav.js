@@ -305,6 +305,18 @@ class KeyNav extends React.Component {
         F.stopEvent(e)
     }
 
+    showUnCheckin() {
+        this.props.fetchPassengers('/NA')
+    }
+
+    showCheckin() {
+        this.props.fetchPassengers('/AC')
+    }
+
+    showAll() {
+        this.props.fetchPassengers('/AL')
+    }
+
     render() {
         return (
             <div>{this.props.children}</div>
@@ -322,20 +334,22 @@ class KeyNav extends React.Component {
         this.loadHandler('keyAltI', (e) => e.keyCode == 73 && e.altKey && isCki, this.openFlightSeat.bind(this))
         this.loadHandler('keyAltL', (e) => e.keyCode == 76 && e.altKey && isCki, this.setFlightSeat.bind(this))
         this.loadHandler('keyAltD', (e) => e.keyCode == 68 && e.altKey && isCki, this.showFlightSeat.bind(this))
+        this.loadHandler('keyAlt2Cki', (e) => e.keyCode == 50 && e.altKey && isCki, this.props.cancelCheckin)
+        this.loadHandler('keyAltQ', (e) => e.keyCode == 81 && e.altKey, this.showUnCheckin.bind(this))
+        this.loadHandler('keyAltW', (e) => e.keyCode == 87 && e.altKey, this.showCheckin.bind(this))
+        this.loadHandler('keyAltS', (e) => e.keyCode == 83 && e.altKey, this.showAll.bind(this))
 
 
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))
-        // this.loadHandler('keyF1', (e) => e.keyCode == 112, this.keyF1)
     }
 
     componentWillUnmount() {
         window.removeEventListener('keydown', this.handleWinKeydown)
-        // this.unloadHandler('keyF1')
     }
 }
-KeyNav.propTypes = {
-    immutableProps: React.PropTypes.any.isRequired,
-}
+// KeyNav.propTypes = {
+//     immutableProps: React.PropTypes.any.isRequired,
+// }
 KeyNav.contextTypes = {
     immutableContext: React.PropTypes.any,
     handleFocus: React.PropTypes.func,

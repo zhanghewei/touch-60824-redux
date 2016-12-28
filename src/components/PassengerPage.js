@@ -33,7 +33,7 @@ class PassengerPage extends React.Component {
         const fetchPassengers = this.props.fetchPassengers
         return (
             <PassengerOperator immutableProps={Immutable.Map(p)} fetchPassengers={fetchPassengers}
-                               onCheckin={this.doCheckin.bind(this)}/>
+                               onCheckin={this.doCheckin.bind(this)} cancelCheckin={this.props.cancelCheckin}/>
         )
     }
 
@@ -156,13 +156,6 @@ class PassengerPage extends React.Component {
         }
     }
 
-    // doOnCmdChange(e) {
-    //
-    //     this.setState(Object.assign({}, this.state, {
-    //         cmd: e.target.value.toLocaleUpperCase()
-    //     }))
-    // }
-
     componentWillReceiveProps(nextProps) {
         const p = nextProps.immutableProps.toJS();
         this.setState(Object.assign({}, this.state, {
@@ -251,10 +244,10 @@ class PassengerPage extends React.Component {
         )
     }
 }
-PassengerPage.propTypes = {
-    immutableProps: React.PropTypes.any.isRequired,
-    fetchPassengers: React.PropTypes.func.isRequired,
-}
+// PassengerPage.propTypes = {
+//     immutableProps: React.PropTypes.any.isRequired,
+//     fetchPassengers: React.PropTypes.func.isRequired,
+// }
 PassengerPage.contextTypes = {
     immutableContext: React.PropTypes.any,
     globalContext: React.PropTypes.any,

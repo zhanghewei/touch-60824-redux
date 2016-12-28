@@ -68,6 +68,25 @@ class Cki extends React.Component {
         }
     }
 
+    cancelCheckin() {
+        const s = this.state.immutableState.toJS()
+        const sl = s.selectList.map((eid)=>F.getDataByEid(eid, s.passengerData)[1]).filter((p)=> p.wci)
+        if (sl && sl.length > 0) {
+
+            if (confirm('您确定要对选中旅客进行取消值机吗？')) {
+
+                const sids = sl.map((p)=>p.sid).join(',')
+                this.context.request('checkIn', 'cancelCheckIn', function (data) {
+                    if (data) {
+                        this.fetchPassengers('/SID' + sids)
+                    }
+                }.bind(this), {
+                    sids: sids
+                })
+            }
+        }
+    }
+
     setMainList(mainList) {
 
         mainList = mainList || []
@@ -259,10 +278,11 @@ class Cki extends React.Component {
         }
         this.s.loginMode = this.props.loginMode
         return (
-            <KeyNav immutableProps={Immutable.Map(this.s)}>
+            <KeyNav immutableProps={Immutable.Map(this.s)} fetchPassengers={this.fetchPassengers.bind(this)} cancelCheckin={this.cancelCheckin.bind(this)}>
                 <PassengerPage immutableProps={Immutable.Map(p)}
                                fetchPassengers={this.fetchPassengers.bind(this)}
-                               onCmdChange={this.doOnCmdChange.bind(this)}/>
+                               onCmdChange={this.doOnCmdChange.bind(this)}
+                               cancelCheckin={this.cancelCheckin.bind(this)}/>
             </KeyNav>
         )
     }

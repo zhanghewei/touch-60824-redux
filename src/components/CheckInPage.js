@@ -23,9 +23,6 @@ export default class CheckInPage extends React.Component {
     }
 
     componentDidMount() {
-        // this.context.updateData({
-        //     activeEid: this.inputId
-        // })
         this.context.setActiveEid(this.inputId)
     }
 
