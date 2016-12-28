@@ -12,6 +12,7 @@ import FlightStatusManage from './FlightStatusManage'
 import SeatSetting from './SeatSetting'
 import ShowSeat from './ShowSeat'
 import FlightStatusPanel from './FlightStatusPanel'
+import UserList from './UserList'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -115,6 +116,10 @@ class PassengerPage extends React.Component {
 
                     return <ShowSeat />
 
+                case C.PAGE_USERLIST :
+
+                    return <UserList />
+
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -131,12 +136,32 @@ class PassengerPage extends React.Component {
 
         if (keyCode == 13) {
             // console.log(newValue, this.props.fetchPassengers)
-            this.props.fetchPassengers(newValue)
+            // this.props.fetchPassengers(newValue)
+
+            this.doExecuteCmd()
             F.stopEvent(e);
 
-            if ($t.is(':text')) {
-                $t.select();
-            }
+            // if ($t.is(':text')) {
+            //     $t.select();
+            // }
+        }
+    }
+
+    doExecuteCmd() {
+
+        const ip = $('#' + C.DEFAULT_INPUT),
+            cmd = $.trim(ip.val() || '').toLocaleLowerCase()
+
+        switch (cmd) {
+            case C.CMD_USERLIST:
+
+                this.context.updateData({
+                    page: C.PAGE_EDIT,
+                    pageName: C.PAGE_USERLIST
+                })
+                break
+            default:
+                this.props.fetchPassengers(cmd)
         }
     }
 
@@ -184,11 +209,12 @@ class PassengerPage extends React.Component {
                                     <input id="mainInput" key="mainInput"
                                            className={F.getSelClass(activeEid == C.DEFAULT_INPUT)}
                                            onFocus={ handleFocus } tabIndex="-1"
-                                           style={{marginLeft: 2}} value={this.state.cmd}
+                                           style={{marginLeft: 2}} value={(this.state.cmd || '').toLocaleUpperCase()}
                                            onKeyDown={this.doOnKeyDown.bind(this)}
                                            onChange={this.props.onCmdChange}/>
                                     <span className="input-group-btn">
-                                  <button className="btn btn-default" tabIndex="-1" style={{marginLeft: 3}}>
+                                  <button onClick={this.doExecuteCmd.bind(this)} className="btn btn-default"
+                                          tabIndex="-1" style={{marginLeft: 3}}>
                                     Enter<span className="glyphicon glyphicon-menu-right"></span>
                                   </button>
                                   </span>
