@@ -173,6 +173,21 @@ export function formatData(data) {
     })
 }
 
+export function upperCase(l) {
+
+    return l.map(o=> {
+
+        for (let k in o) {
+            let v = o[k]
+            if (v && typeof v === 'string') {
+                o[k] = v.toLocaleUpperCase()
+            }
+        }
+
+        return o
+    })
+}
+
 // export function initKeyboardEvent() {
 //
 //     let upFn = function () {

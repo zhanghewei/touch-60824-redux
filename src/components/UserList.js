@@ -30,6 +30,7 @@ export default class UserList extends React.Component {
     }
 
     render() {
+        this.context.setMainList([])
 
         return <div id="userInfoPanel" className="panel panel-default ">
             <div className="panel-body">
@@ -85,5 +86,6 @@ export default class UserList extends React.Component {
 }
 
 UserList.contextTypes = {
+    setMainList: React.PropTypes.func,
     request: React.PropTypes.func
 }

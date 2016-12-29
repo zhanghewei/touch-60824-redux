@@ -13,6 +13,7 @@ import SeatSetting from './SeatSetting'
 import ShowSeat from './ShowSeat'
 import FlightStatusPanel from './FlightStatusPanel'
 import UserList from './UserList'
+import FlightList from './FlightList'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -120,6 +121,10 @@ class PassengerPage extends React.Component {
 
                     return <UserList />
 
+                case C.PAGE_FLIGHTLIST :
+
+                    return <FlightList/>
+
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -135,15 +140,8 @@ class PassengerPage extends React.Component {
         const newValue = $.trim($t.val())
 
         if (keyCode == 13) {
-            // console.log(newValue, this.props.fetchPassengers)
-            // this.props.fetchPassengers(newValue)
-
             this.doExecuteCmd()
             F.stopEvent(e);
-
-            // if ($t.is(':text')) {
-            //     $t.select();
-            // }
         }
     }
 
@@ -158,6 +156,12 @@ class PassengerPage extends React.Component {
                 this.context.updateData({
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_USERLIST
+                })
+                break
+            case C.CMD_FLIGHTLIST:
+                this.context.updateData({
+                    page: C.PAGE_EDIT,
+                    pageName: C.PAGE_FLIGHTLIST
                 })
                 break
             default:

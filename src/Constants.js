@@ -28,9 +28,11 @@ export const PAGE_OPEN_FLIGHT_SEAT = 'PAGE_OPEN_FLIGHT_SEAT'
 export const PAGE_SET_FLIGHT_SEAT = 'PAGE_SET_FLIGHT_SEAT'
 export const PAGE_SHOW_FLIGHT_SEAT = 'PAGE_SHOW_FLIGHT_SEAT'
 export const PAGE_USERLIST = 'PAGE_USERLIST'
+export const PAGE_FLIGHTLIST = 'PAGE_FLIGHTLIST'
 
 
 export const CMD_USERLIST = '/user'
+export const CMD_FLIGHTLIST = '/fm'
 
 
 
