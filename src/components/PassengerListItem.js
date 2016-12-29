@@ -32,6 +32,9 @@ class PassengerListItem extends React.Component {
     doOnKeyDown(e) {
         if (e.which == 13) {
             this.props.onEnter();
+        } else if (e.which == 48 && e.altKey && this.props.isSelection) {
+
+            console.log('e.target.id::', e.target.id)
         }
     }
 

@@ -21,7 +21,7 @@ export default class LogList extends React.Component {
                     list: list
                 }))
             }
-        }.bind(this), {data: '/log'})
+        }.bind(this), {data: (this.props.cmd || '/log')})
     }
 
     componentWillUnmount() {
@@ -29,6 +29,18 @@ export default class LogList extends React.Component {
         if (this.request) {
             this.request.abort()
         }
+    }
+
+    componentWillReceiveProps(nextProps){
+
+        this.request = this.context.request('logInfo', 'queryLog', function (list) {
+
+            if (list && list instanceof Array) {
+                this.setState(Object.assign({}, this.state, {
+                    list: list
+                }))
+            }
+        }.bind(this), {data: (nextProps.cmd || '/log')})
     }
 
     updateMainList() {

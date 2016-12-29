@@ -2,7 +2,7 @@ import * as C from './Constants'
 
 export function resizeWin() {
     var ch = document.documentElement.clientHeight;
-    document.getElementById("mainContainer").style.height = (ch - 200) + "px"
+    document.getElementById("mainContainer").style.height = (ch - 100) + "px"
 }
 
 export function stopEvent(e) {

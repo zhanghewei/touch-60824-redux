@@ -128,7 +128,7 @@ class PassengerPage extends React.Component {
 
                 case C.PAGE_LOGLIST:
 
-                    return <LogList/>
+                    return <LogList cmd={pp.cmd}/>
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -154,29 +154,43 @@ class PassengerPage extends React.Component {
         const ip = $('#' + C.DEFAULT_INPUT),
             cmd = $.trim(ip.val() || '').toLocaleLowerCase()
 
+        ip.val(cmd.toLocaleUpperCase()).select()
+
+        let d;
         switch (cmd) {
             case C.CMD_USERLIST:
 
-                this.context.updateData({
+                d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_USERLIST
-                })
+                }
                 break
             case C.CMD_FLIGHTLIST:
-                this.context.updateData({
+                d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_FLIGHTLIST
-                })
+                }
                 break
             case C.CMD_LOG:
-                this.context.updateData({
+                d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_LOGLIST
-                })
+                }
+                break
+            case C.CMD_SYSLOG:
+                d = {
+                    page: C.PAGE_EDIT,
+                    pageName: C.PAGE_LOGLIST
+                }
                 break
             default:
                 this.props.fetchPassengers(cmd)
+                return
         }
+
+        d.cmd = cmd;
+
+        this.context.updateData(d);
     }
 
     doCheckin() {
@@ -223,9 +237,9 @@ class PassengerPage extends React.Component {
                                     <input id="mainInput" key="mainInput"
                                            className={F.getSelClass(activeEid == C.DEFAULT_INPUT)}
                                            onFocus={ handleFocus } tabIndex="-1"
-                                           style={{marginLeft: 2}} value={(this.state.cmd || '').toLocaleUpperCase()}
+                                           style={{marginLeft: 2}}
                                            onKeyDown={this.doOnKeyDown.bind(this)}
-                                           onChange={this.props.onCmdChange}/>
+                                           />
                                     <span className="input-group-btn">
                                   <button onClick={this.doExecuteCmd.bind(this)} className="btn btn-default"
                                           tabIndex="-1" style={{marginLeft: 3}}>

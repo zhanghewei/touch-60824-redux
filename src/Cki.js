@@ -192,7 +192,9 @@ class Cki extends React.Component {
                 selectList: [],
                 cmd: cmd
             })
+            $('#' + C.DEFAULT_INPUT).val(cmd.toLocaleUpperCase())
             $('#' + activeEid).focus();
+
         }).bind(this), {
             cmdMsg: ''
         })
@@ -236,6 +238,8 @@ class Cki extends React.Component {
         this.updateData({
             cmd: $.trim(e.target.value || '').toLocaleUpperCase()
         })
+
+        // this.s.cmd = $.trim(e.target.value || '').toLocaleUpperCase()
     }
 
     render() {
