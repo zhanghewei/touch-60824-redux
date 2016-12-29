@@ -49,7 +49,7 @@ class PassengerOperator extends React.Component {
         btns.push(this.createBtn(idIndex++, '刷新', this.doRefresh.bind(this)))
 
         //值机按钮
-        const showCheckinBtn = c.selectList && c.selectList.some(function (id) {
+        const showCheckinBtn = p.pageName == C.DEFAULT_PAGENAME && c.selectList && c.selectList.some(function (id) {
 
                 const pl = F.getDataByEid(id, c.passengerData)[1]
                 return !pl.wci;
@@ -59,7 +59,7 @@ class PassengerOperator extends React.Component {
         }
 
         //取消值机按钮
-        const showCancelCheckinBtn = c.selectList && c.selectList.some(function (id) {
+        const showCancelCheckinBtn = p.pageName == C.DEFAULT_PAGENAME && c.selectList && c.selectList.some(function (id) {
                 const pl = F.getDataByEid(id, c.passengerData)[1]
                 return pl.wci;
             });

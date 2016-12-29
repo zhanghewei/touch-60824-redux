@@ -16,9 +16,11 @@ export default class UserList extends React.Component {
 
         this.request = this.context.request('queryUser', 'list', function (list) {
 
-            this.setState(Object.assign({}, this.state, {
-                list: list
-            }))
+            if (list && list instanceof Array) {
+                this.setState(Object.assign({}, this.state, {
+                    list: list
+                }))
+            }
         }.bind(this))
     }
 
@@ -29,13 +31,25 @@ export default class UserList extends React.Component {
         }
     }
 
+    updateMainList() {
+        const l = [],
+            len = this.state.list.length
+        for (let i = 0; i < len; i++) {
+            l.push(C.PREFIX[C.BLOCK_LIST] + i)
+        }
+
+        this.context.setMainList(l)
+    }
+
     render() {
-        this.context.setMainList([])
+
+        const c = this.context.immutableContext.toJS()
+        this.updateMainList()
 
         return <div id="userInfoPanel" className="panel panel-default ">
             <div className="panel-body">
                 <div id="userTableWrapperDiv" className="table-responsive form-inline"
-                     style={{height: '100%', overflow: 'auto'}}>
+                     style={{height: '100%', overflowY: 'auto',overflowX:'hidden'}}>
                     <table id="userTable" className="table table-hover table-condensed dcs-table">
                         <thead>
                         <tr>
@@ -55,14 +69,15 @@ export default class UserList extends React.Component {
                         </thead>
                         <tbody id="listTbody">
                         {
-                            this.state.list.map(u=> {
+                            this.state.list.map((u, i)=> {
 
-                                const id = C.PREFIX[C.BLOCK_LIST] + u.id
-                                return <tr>
+                                const id = C.PREFIX[C.BLOCK_LIST] + i
+                                const cc = c.activeEid == id ? ' sel-active' : ''
+                                return <tr className={cc}>
                                     <td className="dcs-td-checkbox">
                                         <div className="checkbox checkbox-success checkbox-circle">
                                             <input id={id} key={id + '-key'} type="checkbox"
-                                                   className="styled dcs-selectable"/><label></label>
+                                                   className="styled"/><label></label>
                                         </div>
                                     </td>
                                     <td>{u.id}</td>
@@ -86,6 +101,7 @@ export default class UserList extends React.Component {
 }
 
 UserList.contextTypes = {
+    immutableContext: React.PropTypes.any,
     setMainList: React.PropTypes.func,
     request: React.PropTypes.func
 }

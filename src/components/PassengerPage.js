@@ -14,6 +14,7 @@ import ShowSeat from './ShowSeat'
 import FlightStatusPanel from './FlightStatusPanel'
 import UserList from './UserList'
 import FlightList from './FlightList'
+import LogList from './LogList'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -62,7 +63,7 @@ class PassengerPage extends React.Component {
      */
     renderSelect() {
         const pp = this.props.immutableProps.toJS()
-        if (pp.selectList.length > 0) {
+        if (pp.selectList.length > 0 && pp.pageName == C.DEFAULT_PAGENAME) {
             const p = {
                 page: pp.page,
                 defaultBlock: pp.defaultBlock,
@@ -125,6 +126,9 @@ class PassengerPage extends React.Component {
 
                     return <FlightList/>
 
+                case C.PAGE_LOGLIST:
+
+                    return <LogList/>
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -162,6 +166,12 @@ class PassengerPage extends React.Component {
                 this.context.updateData({
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_FLIGHTLIST
+                })
+                break
+            case C.CMD_LOG:
+                this.context.updateData({
+                    page: C.PAGE_EDIT,
+                    pageName: C.PAGE_LOGLIST
                 })
                 break
             default:

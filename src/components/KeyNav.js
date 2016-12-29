@@ -168,6 +168,9 @@ class KeyNav extends React.Component {
         const p = this.props.immutableProps.toJS()
         const c = this.context.immutableContext.toJS()
         const activeEid = c.activeEid
+
+        F.stopEvent(e)
+        if (p.pageName != C.DEFAULT_PAGENAME) return null
         if (p.block == C.BLOCK_LIST) {
             // 旅客列表
             F.stopEvent(e)

@@ -2,7 +2,7 @@ import * as C from './Constants'
 
 export function resizeWin() {
     var ch = document.documentElement.clientHeight;
-    document.getElementById("mainContainer").style.height = (ch - 100) + "px"
+    document.getElementById("mainContainer").style.height = (ch - 200) + "px"
 }
 
 export function stopEvent(e) {
@@ -175,17 +175,28 @@ export function formatData(data) {
 
 export function upperCase(l) {
 
-    return l.map(o=> {
+    if (!l) return l;
 
+    let _us = (s)=>s && typeof s === 'string' ? s.toLocaleUpperCase() : s;
+    let _uo = (o)=> {
+
+        if (!o) return o;
         for (let k in o) {
-            let v = o[k]
-            if (v && typeof v === 'string') {
-                o[k] = v.toLocaleUpperCase()
-            }
+            o[k] = _us(o[k])
         }
-
         return o
-    })
+    }
+
+    if (l instanceof Array) {
+        return l.map(o=> {
+            return _uo(o)
+        })
+    } else if (typeof l === 'object') {
+        return _uo(l)
+    } else if (typeof l === 'string') {
+        return _us(l)
+    }
+    return l
 }
 
 // export function initKeyboardEvent() {
