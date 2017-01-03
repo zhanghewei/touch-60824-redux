@@ -329,6 +329,15 @@ class KeyNav extends React.Component {
         })
     }
 
+    showShortCutHelp(e) {
+        this.context.updateData({
+            page: C.PAGE_EDIT,
+            pageName: C.PAGE_SHORTCUTHELP,
+            cmd: ''
+        })
+        F.stopEvent(e)
+    }
+
     render() {
         return (
             <div>{this.props.children}</div>
@@ -351,6 +360,7 @@ class KeyNav extends React.Component {
         this.loadHandler('keyAltW', (e) => e.keyCode == 87 && e.altKey, this.showCheckin.bind(this))
         this.loadHandler('keyAltS', (e) => e.keyCode == 83 && e.altKey, this.showAll.bind(this))
         this.loadHandler('keyAlt0', (e) => e.keyCode == 48 && e.altKey && isCki, this.showPassengerLog.bind(this))
+        this.loadHandler('keyF12', (e) => e.keyCode == 123, this.showShortCutHelp.bind(this))
 
 
         window.addEventListener('keydown', this.handleWinKeydown.bind(this))

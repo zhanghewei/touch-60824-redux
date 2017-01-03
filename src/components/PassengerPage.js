@@ -15,6 +15,8 @@ import FlightStatusPanel from './FlightStatusPanel'
 import UserList from './UserList'
 import FlightList from './FlightList'
 import LogList from './LogList'
+import ShortCutHelp from './ShortCutHelp'
+import CmdHelp from './CmdHelp'
 
 @pureRender
 class PassengerPage extends React.Component {
@@ -29,16 +31,19 @@ class PassengerPage extends React.Component {
 
     renderOperator() {
         const pp = this.props.immutableProps.toJS()
-        const p = {
-            page: pp.page,
-            pageName: pp.pageName,
-            cmd: pp.cmd
+
+        if (F.isShowOperator(pp.pageName)) {
+            const p = {
+                page: pp.page,
+                pageName: pp.pageName,
+                cmd: pp.cmd
+            }
+            const fetchPassengers = this.props.fetchPassengers
+            return (
+                <PassengerOperator immutableProps={Immutable.Map(p)} fetchPassengers={fetchPassengers}
+                                   onCheckin={this.doCheckin.bind(this)} cancelCheckin={this.props.cancelCheckin}/>
+            )
         }
-        const fetchPassengers = this.props.fetchPassengers
-        return (
-            <PassengerOperator immutableProps={Immutable.Map(p)} fetchPassengers={fetchPassengers}
-                               onCheckin={this.doCheckin.bind(this)} cancelCheckin={this.props.cancelCheckin}/>
-        )
     }
 
     /**
@@ -129,6 +134,14 @@ class PassengerPage extends React.Component {
                 case C.PAGE_LOGLIST:
 
                     return <LogList cmd={pp.cmd}/>
+
+                case C.PAGE_SHORTCUTHELP:
+
+                    return <ShortCutHelp/>
+
+                case C.PAGE_CMDHELP:
+
+                    return <CmdHelp/>
             }
             throw 'page not found !!' + pp.pageName
             // return (
@@ -157,30 +170,36 @@ class PassengerPage extends React.Component {
         ip.val(cmd.toLocaleUpperCase()).select()
 
         let d;
-        switch (cmd) {
-            case C.CMD_USERLIST:
+        switch (true) {
+            case C.CMD_USERLIST == cmd:
 
                 d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_USERLIST
                 }
                 break
-            case C.CMD_FLIGHTLIST:
+            case C.CMD_FLIGHTLIST == cmd:
                 d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_FLIGHTLIST
                 }
                 break
-            case C.CMD_LOG:
+            case C.CMD_LOG == cmd:
                 d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_LOGLIST
                 }
                 break
-            case C.CMD_SYSLOG:
+            case C.CMD_SYSLOG == cmd:
                 d = {
                     page: C.PAGE_EDIT,
                     pageName: C.PAGE_LOGLIST
+                }
+                break
+            case cmd == '?' || cmd == '？':
+                d = {
+                    page: C.PAGE_EDIT,
+                    pageName: C.PAGE_CMDHELP
                 }
                 break
             default:
@@ -239,7 +258,7 @@ class PassengerPage extends React.Component {
                                            onFocus={ handleFocus } tabIndex="-1"
                                            style={{marginLeft: 2}}
                                            onKeyDown={this.doOnKeyDown.bind(this)}
-                                           />
+                                    />
                                     <span className="input-group-btn">
                                   <button onClick={this.doExecuteCmd.bind(this)} className="btn btn-default"
                                           tabIndex="-1" style={{marginLeft: 3}}>
@@ -251,7 +270,7 @@ class PassengerPage extends React.Component {
                         </div>
                     </div>
                 </nav>
-                <div id="mainContainer" className="container-fluid">
+                <div id="mainContainer" className="container-fluid" style={{overflowX: 'hidden', overflowY: 'auto'}}>
                     <div className="panel panel-default" style={{marginTop: '5px', paddingRight: '10px'}}>
                         <div className="panel-body" style={{padding: 0}}>
                             <FlightStatusPanel />

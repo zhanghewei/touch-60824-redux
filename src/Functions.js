@@ -199,6 +199,11 @@ export function upperCase(l) {
     return l
 }
 
+export function isShowOperator(pageName) {
+
+    return pageName != C.PAGE_SHORTCUTHELP
+}
+
 // export function initKeyboardEvent() {
 //
 //     let upFn = function () {
