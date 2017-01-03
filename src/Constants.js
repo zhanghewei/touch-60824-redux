@@ -20,7 +20,7 @@ export const PREFIX = {
 export const SERVER_URL = 'http://127.0.0.1:2172/site';
 export const REQUEST_TIMEOUT = 30000;
 export const LOGIN_ON_OTHERSIDE = 0;
-export const DEFAULT_CMD = '/NA';
+export const DEFAULT_CMD = '/TOPIC';
 export const DEFAULT_PAGENAME = 'passengerList'
 export const PAGE_CHECKIN = 'PAGE_CHECKIN'
 export const PAGE_FLIGHT_STATUS_MANAGE = 'PAGE_FLIGHT_STATUS_MANAGE'
@@ -30,7 +30,6 @@ export const PAGE_SHOW_FLIGHT_SEAT = 'PAGE_SHOW_FLIGHT_SEAT'
 export const PAGE_USERLIST = 'PAGE_USERLIST'
 export const PAGE_FLIGHTLIST = 'PAGE_FLIGHTLIST'
 export const PAGE_LOGLIST = 'PAGE_LOGLIST'
-export const PAGE_SYSLOGLIST = 'PAGE_SYSLOGLIST'
 
 
 export const CMD_USERLIST = '/user'

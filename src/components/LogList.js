@@ -14,14 +14,7 @@ export default class LogList extends React.Component {
 
     componentWillMount() {
 
-        this.request = this.context.request('logInfo', 'queryLog', function (list) {
-
-            if (list && list instanceof Array) {
-                this.setState(Object.assign({}, this.state, {
-                    list: list
-                }))
-            }
-        }.bind(this), {data: (this.props.cmd || '/log')})
+        this.fetchData(this.props.cmd)
     }
 
     componentWillUnmount() {
@@ -31,8 +24,13 @@ export default class LogList extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps){
+    fetchData(cmd) {
+        const c = this.context.immutableContext.toJS();
 
+        const uuids = c.selectList.map(eid=> {
+            const o = F.getDataByEid(eid, c.passengerData);
+            return o[1].uui
+        }).join(',')
         this.request = this.context.request('logInfo', 'queryLog', function (list) {
 
             if (list && list instanceof Array) {
@@ -40,7 +38,12 @@ export default class LogList extends React.Component {
                     list: list
                 }))
             }
-        }.bind(this), {data: (nextProps.cmd || '/log')})
+        }.bind(this), {data: cmd || '', pru: uuids})
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+        this.fetchData(nextProps.cmd)
     }
 
     updateMainList() {

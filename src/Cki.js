@@ -116,6 +116,8 @@ class Cki extends React.Component {
         this.setState({immutableState}, function () {
             const $t = $('#' + this.s.activeEid)
             $t.focus()
+
+            $('#' + C.DEFAULT_INPUT).val((this.s.cmd || '').toLocaleUpperCase())
         })
     }
 
@@ -152,6 +154,11 @@ class Cki extends React.Component {
         tma.block = tma.block || this.s.defaultBlock
         tma.activeEid = active
         this.updateData(tma)
+
+        const $t = $('#' + active)
+        if ($t.is(':text')) {
+            $t.select();
+        }
     }
 
     /**
@@ -170,7 +177,7 @@ class Cki extends React.Component {
     }
 
     fetchPassengers(cmd) {
-        cmd = cmd || this.state.cmd || '/NA';
+        cmd = cmd || this.state.cmd || C.DEFAULT_CMD;
         this.context.request('queryPassenger', cmd, (function (passengerData) {
 
             passengerData = F.formatData(passengerData);
